@@ -10,10 +10,26 @@ interface HomeProps {
 
 export const Home: React.FC<HomeProps> = ({ statusModal }) => {
   const [micOnClick, setMicOnClick] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioStream, setAudioStream] = useState(null)
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [userSpeech, setUserSpeech] = useState(null);
 
   const clickAction = () => {
     setMicOnClick(!micOnClick);
+    micOnClick == true ? startRecording() : stopRecording()
   };
+
+  const startRecording = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    setAudioStream(stream);
+    setIsRecording(true);
+
+  }
+
+  const stopRecording = () => {
+
+  }
 
   return (
     <>
