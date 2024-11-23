@@ -14,7 +14,7 @@ export const SurveyModal: React.FC<SurveyModalProps> = ({ chooseAnswer }) => {
       <div className="bg-light rounded-xl shadow-xl w-11/12 md:w-2/5 h-auto py-6 md:py-8 px-4 md:px-6 relative z-[-1]">
         <h1 className="font-semibold text-center text-md md:text-xl mb-6">
           Haii mantemann! Yucca kepo nihh, informasi apa sih yang sedang kamu
-          cari ?
+          cari ? 🤔
         </h1>
         <div className="flex flex-col space-y-4">
           {informationOptions.map((info, index) => (

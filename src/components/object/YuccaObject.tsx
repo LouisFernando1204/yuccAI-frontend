@@ -1,4 +1,4 @@
-import panda_nobg from '../../assets/panda_nobg.png';
+import panda_nobg from '../../assets/image/panda_nobg.png';
 
 export const YuccaObject = () => {
   return (
