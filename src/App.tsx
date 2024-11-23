@@ -3,6 +3,7 @@ import Home from "./views/Home";
 import History from "./views/History";
 import { Navbar } from "./components/fixed/Navbar";
 import { useState } from "react";
+import { Footer } from "./components/fixed/Footer";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -42,6 +43,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/history" element={<History />} />
           </Routes>
+          <Footer navigateToHistory={navigateToHistory} navigateToHome={navigateToHome} isNavigateToHistory={ isNavigateToHistory } />
         </div>
       </div>
     </>
