@@ -12,7 +12,7 @@ export const Footer: React.FC<FooterProps> = ({
   isNavigateToHistory,
 }) => {
   return (
-    <div className="w-full py-4 md:py-10">
+    <div className="mt-10 md:mt-10">
       <div className="border-t-2 -mx-10" />
       <div className="py-8 md:py-12 flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-10 font-semibold text-md md:text-lg">
         <h1>

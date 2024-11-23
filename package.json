@@ -10,12 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@coreui/icons": "^3.0.1",
+    "@coreui/icons-react": "^2.3.0",
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@mui/material": "^6.1.8",
     "axios": "^1.7.7",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dark-mode-toggle": "^0.2.0",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.28.0"
+    "react-router-dom": "^6.28.0",
+    "react-simple-typewriter": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

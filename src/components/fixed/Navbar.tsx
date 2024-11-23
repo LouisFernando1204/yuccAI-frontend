@@ -18,7 +18,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   return (
     <div className="mx-4 md:mx-10 h-auto">
-      <div className="flex justify-between py-2 md:py-5 items-center ">
+      <div className="flex justify-between py-4 md:py-5 items-center ">
         <div className="flex items-center">
           <h1
             onClick={() => navigateToHome()}
