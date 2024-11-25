@@ -12,7 +12,8 @@ export const RecommendationSection: React.FC<RecommendationSectionProps> = ({
   loading,
   questionAndAnswer
 }) => {
-
+  console.log(loading)
+  console.log(questionAndAnswer)
   return (
     <div className="flex justify-start items-start w-full">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 w-full">

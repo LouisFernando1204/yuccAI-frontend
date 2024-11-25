@@ -12,7 +12,7 @@ export default {
     colors: {
       dark: '#252525',
       light: '#fafafa',
-      primary: '#f97316'
+      primary: '#f0843c'
     }
   },
   plugins: [],

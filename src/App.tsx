@@ -11,9 +11,9 @@ import { dummyQuestionAndAnswer } from "./utils/list";
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isNavigateToHistory, setIsNavigateToHistory] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [recommendation, setRecommendation] = useState<QuestionAndAnswer[]>([])
+  const [recommendation, setRecommendation] = useState<QuestionAndAnswer[]>([]);
   const navigate = useNavigate();
 
   const switchMode = () => {
@@ -33,7 +33,6 @@ function App() {
   const chooseAnswer = (answer: string) => {
     sessionStorage.setItem("surveyAnswer", answer);
     setShowModal(false);
-    fetchRecommendation(answer)
   };
 
   const fetchRecommendation = async (answer: string) => {
@@ -41,30 +40,30 @@ function App() {
     try {
       const data = dummyQuestionAndAnswer;
       setRecommendation(data);
-    }
-    catch (error) {
-      console.log(error)
-    }
-    finally {
+    } catch (error) {
+      console.log(error);
+    } finally {
       const timer = setTimeout(() => {
         setLoading(false);
-      }, 2000)
+      }, 2000);
       // setLoading(false);
       return () => clearTimeout(timer);
     }
-  }
+  };
 
   useEffect(() => {
     const surveyAnswer = sessionStorage.getItem("surveyAnswer");
     if (!surveyAnswer) {
-      setShowModal(true);
       setLoading(true);
     }
   }, []);
 
   useEffect(() => {
-
-  }, [loading])
+    const surveyAnswer = sessionStorage.getItem("surveyAnswer");
+    if (surveyAnswer) {
+      fetchRecommendation(surveyAnswer);
+    }
+  }, [loading, showModal]);
 
   return (
     <>
@@ -82,7 +81,16 @@ function App() {
         />
         <div className="m-4 lg:m-10">
           <Routes>
-            <Route path="/" element={<Home statusModal={showModal} loading={loading} recommendation={ recommendation } />} />
+            <Route
+              path="/"
+              element={
+                <Home
+                  statusModal={showModal}
+                  loading={loading}
+                  recommendation={recommendation}
+                />
+              }
+            />
             <Route path="/history" element={<History />} />
           </Routes>
         </div>
@@ -92,7 +100,9 @@ function App() {
           isNavigateToHistory={isNavigateToHistory}
         />
       </div>
-      {showModal && <SurveyModal chooseAnswer={chooseAnswer} />}
+      {showModal && !sessionStorage.getItem("surveyAnswer") && (
+        <SurveyModal chooseAnswer={chooseAnswer} />
+      )}
     </>
   );
 }

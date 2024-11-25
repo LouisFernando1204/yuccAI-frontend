@@ -9,7 +9,7 @@ import { QuestionAndAnswer } from "../utils/objectInterface";
 interface HomeProps {
   statusModal: boolean;
   loading: boolean;
-  recommendation: QuestionAndAnswer[];
+  recommendation: QuestionAndAnswer[]
 }
 
 export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation }) => {
