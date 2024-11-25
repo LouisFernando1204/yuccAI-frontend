@@ -1,4 +1,6 @@
-export const dummyQuestionAndAnswer = [
+import { InformationOption, QuestionAndAnswer } from "./objectInterface";
+
+export const dummyQuestionAndAnswer : QuestionAndAnswer[] = [
   {
     question: "Apa yang dimaksud dengan fotosintesis pada tumbuhan?",
     answer:
@@ -21,7 +23,7 @@ export const dummyQuestionAndAnswer = [
   },
 ];
 
-export const informationOptions = [
+export const informationOptions : InformationOption[] = [
   {
     key: "Overview Universitas Ciputra (UC)",
     words: "🔍 Lagi kepo nih, bisa kasih overview tentang UC nggak?",

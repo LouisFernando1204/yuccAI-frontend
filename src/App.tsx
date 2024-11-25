@@ -5,11 +5,15 @@ import { Navbar } from "./components/fixed/Navbar";
 import { useEffect, useState } from "react";
 import { Footer } from "./components/fixed/Footer";
 import { SurveyModal } from "./components/modal/SurveyModal";
+import { QuestionAndAnswer } from "./utils/objectInterface";
+import { dummyQuestionAndAnswer } from "./utils/list";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isNavigateToHistory, setIsNavigateToHistory] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [recommendation, setRecommendation] = useState<QuestionAndAnswer[]>([])
   const navigate = useNavigate();
 
   const switchMode = () => {
@@ -29,14 +33,38 @@ function App() {
   const chooseAnswer = (answer: string) => {
     sessionStorage.setItem("surveyAnswer", answer);
     setShowModal(false);
+    fetchRecommendation(answer)
   };
+
+  const fetchRecommendation = async (answer: string) => {
+    // fetch recommendation here
+    try {
+      const data = dummyQuestionAndAnswer;
+      setRecommendation(data);
+    }
+    catch (error) {
+      console.log(error)
+    }
+    finally {
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 2000)
+      // setLoading(false);
+      return () => clearTimeout(timer);
+    }
+  }
 
   useEffect(() => {
     const surveyAnswer = sessionStorage.getItem("surveyAnswer");
     if (!surveyAnswer) {
       setShowModal(true);
+      setLoading(true);
     }
   }, []);
+
+  useEffect(() => {
+
+  }, [loading])
 
   return (
     <>
@@ -54,7 +82,7 @@ function App() {
         />
         <div className="m-4 lg:m-10">
           <Routes>
-            <Route path="/" element={<Home statusModal={showModal} />} />
+            <Route path="/" element={<Home statusModal={showModal} loading={loading} recommendation={ recommendation } />} />
             <Route path="/history" element={<History />} />
           </Routes>
         </div>
