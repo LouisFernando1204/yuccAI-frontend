@@ -1,6 +1,6 @@
 import { InformationOption, QuestionAndAnswer } from "./objectInterface";
 
-export const dummyQuestionAndAnswer : QuestionAndAnswer[] = [
+export const dummyQuestionAndAnswer: QuestionAndAnswer[] = [
   {
     question: "Apa yang dimaksud dengan fotosintesis pada tumbuhan?",
     answer:
@@ -23,7 +23,7 @@ export const dummyQuestionAndAnswer : QuestionAndAnswer[] = [
   },
 ];
 
-export const informationOptions : InformationOption[] = [
+export const informationOptions: InformationOption[] = [
   {
     key: "Overview Universitas Ciputra (UC)",
     words: "🔍 Lagi kepo nih, bisa kasih overview tentang UC nggak?",
@@ -35,6 +35,11 @@ export const informationOptions : InformationOption[] = [
   {
     key: "Pendaftaran Mahasiswa Baru (PMB)",
     words: "📝 Mau dong tentang Pendaftaran Mahasiswa Baru (PMB)?",
+  },
+  {
+    key: "Panduan Akademik Universitas Ciputra (UC)",
+    words:
+      "📘 Aku penasaran, ada panduan akademik atau Academic Guideline di UC nggak?",
   },
   {
     key: "Prestasi Mahasiswa Universitas Ciputra atau UC People",
