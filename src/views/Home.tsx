@@ -5,6 +5,7 @@ import { RecommendationSection } from "../components/sections/RecommendationSect
 import React, { useEffect, useState } from "react";
 import zapsplat_multimedia_button_click_bright_003_92100 from "../assets/sound/zapsplat_multimedia_button_click_bright_003_92100.mp3";
 import { QuestionAndAnswer } from "../utils/objectInterface";
+import axios from "axios";
 
 interface HomeProps {
   statusModal: boolean;
@@ -31,8 +32,38 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
   };
 
   useEffect(() => {
-    console.log("Status modal:", statusModal);
   }, [statusModal]);
+
+  useEffect(() => {
+    console.log(import.meta.env.VITE_API_URL)
+    // try to fetch all information
+    const fetchAllInformation = async () => {
+      try {
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/get_all_information`)
+        console.log(result)
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+
+    // try to add new information
+    const addNewInformation = async () => {
+      try {
+        const result = await axios.post(`${import.meta.env.VITE_API_URL}/add_information`, {
+          question: "siapa itu steve go",
+          answer: "dia adalah..."
+        })
+        console.log(result)
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchAllInformation()
+    addNewInformation()
+  }, []);
 
   return (
     <>
