@@ -1,13 +1,16 @@
 import { CIcon } from "@coreui/icons-react";
 import { cilMediaStop, cilMicrophone } from "@coreui/icons";
-import React from "react";
+import React, { useState } from "react";
+
+
 
 interface MicrophoneSectionProps {
   clickAction: () => void;
   micOnClick: boolean;
+
 }
 
-export const MicrophoneSection: React.FC<MicrophoneSectionProps> = ({
+export const MicrophoneSection: React.FC<MicrophoneSectionProps>  = ({
   clickAction,
   micOnClick,
 }) => {
