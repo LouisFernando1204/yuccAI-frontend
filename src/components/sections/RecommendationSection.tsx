@@ -6,11 +6,13 @@ import { QuestionAndAnswer } from "../../utils/objectInterface";
 interface RecommendationSectionProps {
   loading: boolean;
   questionAndAnswer: QuestionAndAnswer[]; 
+  onRecomendationonClick: (question: string) => void;
 }
 
 export const RecommendationSection: React.FC<RecommendationSectionProps> = ({
   loading,
-  questionAndAnswer
+  questionAndAnswer,
+  onRecomendationonClick
 }) => {
 
   return (
@@ -35,6 +37,7 @@ export const RecommendationSection: React.FC<RecommendationSectionProps> = ({
           : questionAndAnswer.map((qna, index) => (
               <div
                 key={index}
+                onClick={() => onRecomendationonClick(qna.question)}
                 className="hover:scale-105 duration-200 flex flex-row items-center space-x-2 rounded-xl bg-primary p-2 shadow-lg cursor-pointer"
               >
                 <div className="basis-3/10 flex justify-center">
