@@ -11,7 +11,11 @@ export const SurveyModal: React.FC<SurveyModalProps> = ({ chooseAnswer }) => {
       className={`fixed flex items-center justify-center w-screen h-screen inset-0 bg-dark bg-opacity-50`}
     >
       {" "}
-      <div className="bg-light rounded-xl shadow-xl w-11/12 md:w-2/5 max-h-[90%] py-6 md:py-8 px-4 md:px-6 overflow-y-auto no-scrollbar relative">
+      <div
+        data-aos="zoom-in-up"
+        data-aos-anchor-placement="top-bottom"
+        data-aos-duration="500"
+        className="bg-light rounded-xl shadow-xl w-11/12 md:w-2/5 max-h-[90%] py-6 md:py-8 px-4 md:px-6 overflow-y-auto no-scrollbar relative">
         <h1 className="font-semibold text-center text-md md:text-xl mb-6">
           Haii mantemann! Yucca kepo nihh, informasi apa sih yang sedang kamu
           cari ? 🤔

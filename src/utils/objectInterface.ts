@@ -1,9 +1,10 @@
-export interface QuestionAndAnswer {
-  question: string;
-  answer: string;
-}
-
 export interface InformationOption {
   key: string;
   words: string;
+}
+
+export interface QuestionAnswer {
+  question: string;
+  answer: string;
+  answer_source: string;
 }

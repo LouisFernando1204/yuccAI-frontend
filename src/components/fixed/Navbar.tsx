@@ -3,10 +3,10 @@ import DarkModeToggle from "react-dark-mode-toggle";
 
 interface NavbarProps {
   switchMode: () => void;
-  isDarkMode: boolean;
+  isDarkMode?: boolean;
   navigateToHistory: () => void;
   navigateToHome: () => void;
-  isNavigateToHistory: boolean;
+  isNavigateToHistory?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -30,9 +30,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex flex-row items-center justify-center space-x-4">
           <h1
             onClick={() => navigateToHistory()}
-            className={`text:md md:text-lg font-semibold hover:text-primary cursor-pointer ${
-              isNavigateToHistory && "text-primary"
-            }`}
+            className={`text:md md:text-lg font-semibold hover:text-primary cursor-pointer ${isNavigateToHistory && "text-primary"
+              }`}
           >
             History
           </h1>
