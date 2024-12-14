@@ -99,10 +99,11 @@ function App() {
                   statusModal={showModal}
                   loading={recommendationLoading}
                   recommendation={recommendation}
+                  fetchRecommendation={fetchRecommendation}
                 />
               }
             />
-            <Route path="/history" element={<History />} />
+            <Route path="/history" element={<History isDarkMode={isDarkMode} />} />
           </Routes>
         </div>
         <Footer

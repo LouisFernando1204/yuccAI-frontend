@@ -1,24 +1,25 @@
+import React, { useEffect, useState, useRef } from "react";
+import { createRoot } from 'react-dom/client'
+import axios from "axios";
+import { ElevenLabsClient } from "elevenlabs";
+import Swal from 'sweetalert2'
+import zapsplat_multimedia_button_click_bright_003_92100 from "../assets/sound/zapsplat_multimedia_button_click_bright_003_92100.mp3";
+import 'animate.css';
 import { GreetingSection } from "../components/sections/GreetingSection";
 import { MicrophoneSection } from "../components/sections/MicrophoneSection";
 import { RecommendationSection } from "../components/sections/RecommendationSection";
 import { YuccaObject } from "../components/object/YuccaObject";
-import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
-import { ElevenLabsClient } from "elevenlabs";
-import zapsplat_multimedia_button_click_bright_003_92100 from "../assets/sound/zapsplat_multimedia_button_click_bright_003_92100.mp3";
-import { QuestionAnswer } from "../utils/objectInterface";
-import Swal from 'sweetalert2'
-import 'animate.css';
 import { TextGenerateEffect } from "../components/ui/text-generate-effect";
-import ReactDOM from 'react-dom';
+import { QuestionAnswer } from "../utils/objectInterface";
 
 interface HomeProps {
   statusModal: boolean;
   loading: boolean;
   recommendation: QuestionAnswer[];
+  fetchRecommendation: (answerSource: string) => void;
 }
 
-export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation }) => {
+export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation, fetchRecommendation }) => {
   const [question, setQuestion] = useState<string>("");
   const [micOnClick, setMicOnClick] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
@@ -55,50 +56,12 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
           try {
             const yuccAIResponse = await askToYuccAI(question);
             await speak(yuccAIResponse.response);
-
-            await Swal.fire({
-              title: '',
-              html: `
-                <div style="text-align: center;" id="swal-text-container">
-                    <!-- TextGenerateEffect -->
-                </div>
-              `,
-              confirmButtonText: 'Selesai',
-              customClass: {
-                popup: 'swal-modal',
-                confirmButton: 'swal-confirm-button swal-wide-button',
-                actions: 'swal-one-buttons'
-              },
-              buttonsStyling: false,
-              position: "bottom",
-              showClass: {
-                popup: `
-                  animate__animated
-                  animate__fadeInUp
-                  animate__faster
-                `
-              },
-              hideClass: {
-                popup: `
-                  animate__animated
-                  animate__fadeOutDown
-                  animate__faster
-                `
-              },
-              willOpen: () => {
-                const container = document.getElementById('swal-text-container');
-                if (container) {
-                  ReactDOM.render(
-                    <TextGenerateEffect
-                      className="font-semibold italic text-base sm:text-lg text-gray-900" words={yuccAIResponse.response} />,
-                    container
-                  );
-                } else {
-                  console.error('Container not found');
-                }
-              }
-            });
+            await showPopUpResponse(yuccAIResponse.response);
             await addNewInformation(question, yuccAIResponse.response, yuccAIResponse.source);
+            const surveyAnswer = sessionStorage.getItem("surveyAnswer");
+            if (surveyAnswer) {
+              fetchRecommendation(surveyAnswer);
+            }
           } catch (error) {
             console.error(error);
             await speak("Terjadi kesalahan. Silakan coba lagi.");
@@ -157,6 +120,7 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
     };
     recognition.start();
   };
+
   const stopRecording = () => {
     console.log("Stopped recording.");
   };
@@ -204,6 +168,7 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
         try {
           const yuccAIResponse = await askToYuccAI(question);
           await speak(yuccAIResponse.response);
+          await showPopUpResponse(yuccAIResponse.response);
         } catch (error) {
           console.error(error);
           await speak("Terjadi kesalahan. Silakan coba lagi.");
@@ -227,6 +192,61 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
         }
       );
       console.log("History Added: ", result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const showPopUpResponse = async (yuccAIResponse: string) => {
+    try {
+      const result = await Swal.fire({
+        title: '',
+        html: `
+              <div style="text-align: center;" id="swal-text-container">
+                  <!-- TextGenerateEffect -->
+              </div>
+            `,
+        confirmButtonText: 'Selesai',
+        showCancelButton: true,
+        cancelButtonText: 'Berhenti',
+        customClass: {
+          popup: 'swal-modal',
+          confirmButton: 'swal-confirm-button swal-wide-button',
+          cancelButton: 'swal-cancel-button swal-wide-button',
+          actions: 'swal-two-buttons'
+        },
+        buttonsStyling: false,
+        position: "bottom",
+        showClass: {
+          popup: `
+                animate__animated
+                animate__fadeInUp
+                animate__faster
+              `
+        },
+        hideClass: {
+          popup: `
+                animate__animated
+                animate__fadeOutDown
+                animate__faster
+              `
+        },
+        willOpen: () => {
+          createRoot(document.getElementById('swal-text-container')!).render(
+            <TextGenerateEffect
+              className="font-semibold italic text-base sm:text-lg text-gray-900" words={yuccAIResponse} />,
+          );
+        }
+      });
+
+      if (result.isDismissed) {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }
+      } else {
+        console.log("Conversation is done.");
+      }
     } catch (error) {
       console.log(error);
     }

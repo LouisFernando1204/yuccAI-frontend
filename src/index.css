@@ -35,9 +35,25 @@ body {
   background-color: #cf6b29ff;
 }
 
+.swal-cancel-button {
+  background-color: #252525;
+  color: white;
+}
+
+.swal-cancel-button:hover {
+  background-color: #413e3eff;
+}
+
 .swal-one-buttons {
   display: flex;
   width: 100%;
+}
+
+.swal-two-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
 }
 
 .swal-wide-button {

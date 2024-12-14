@@ -1,6 +1,6 @@
-import { cilLightbulb } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
 import React from "react";
+import { cilLightbulb } from "@coreui/icons";
 import { QuestionAnswer } from "../../utils/objectInterface";
 
 interface RecommendationSectionProps {
@@ -17,6 +17,9 @@ export const RecommendationSection: React.FC<RecommendationSectionProps> = ({
   onRecommendationClick
 }) => {
   const isEmpty = !recommendation || recommendation.length === 0;
+
+  const capitalizeFirstLetter = (text: string): string =>
+    text.charAt(0).toUpperCase() + text.slice(1);
 
   return (
     <div className="flex justify-start items-start w-full">
@@ -69,7 +72,7 @@ export const RecommendationSection: React.FC<RecommendationSectionProps> = ({
                 </div>
                 <div className="basis-7/10">
                   <h1 className="text-[10px] md:text-[14px] font-normal">
-                    {item.question}?
+                    {capitalizeFirstLetter(item.question)}?
                   </h1>
                 </div>
               </button>
