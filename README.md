@@ -1,50 +1,42 @@
-# React + TypeScript + Vite
+# YuccAI: Your Voice Assistant for Universitas Ciputra! 🎓💬
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## ✨ Overview  
+Welcome to **YuccAI**, the ultimate voice assistant website designed exclusively for Universitas Ciputra! 🚀🗣️ With **YuccAI**, users can effortlessly obtain information about the university by simply asking questions through voice commands. Yucca, your intelligent 3D assistant, responds in real-time with accurate answers and keeps a history of every conversation for easy reference. Whether you're a student, staff, or prospective applicant, **YuccAI** makes finding information simple, interactive, and efficient!  
 
-Currently, two official plugins are available:
+## 💡 Features  
+- 🎙️ **Voice Interaction**: Ask questions directly through voice commands, and Yucca responds with spoken answers.  
+- 🕒 **Conversation History**: Keep track of all previous inquiries, ensuring important information is always at your fingertips.  
+- 🌟 **Recommendation Topics**: Discover curated topics and FAQs to quickly find answers to common questions.  
+- 🔄 **Dynamic Updates**: New user questions are automatically added to the recommended topics for collective learning.  
+- 🧑‍🎨 **Interactive 3D Assistant**: Meet Yucca, a fully rendered 3D model that enhances the user experience with a visually engaging interface.  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📋 How It Works  
+1. **Voice Queries**: Users ask questions about Universitas Ciputra through voice input.  
+2. **AI-Powered Responses**: Yucca processes the question using advanced AI models and delivers answers in real-time.  
+3. **Conversation History**: Every interaction is saved in a personal conversation history for easy access later.  
+4. **Dynamic Recommendations**: Frequently asked or new questions are automatically added to the recommendation section.  
 
-## Expanding the ESLint configuration
+## ⚙️ Tech Stack Behind YuccAI  
+- 🌐 **Frontend**: React.js  
+- 🔧 **Backend**: Golang for managing conversation data storage  
+- 🧠 **AI Models**:  
+  - Ollama Model (nomic-embed-text and mistral) integrated via Python FastAPI  
+- 🎨 **3D Model**: Blender for Yucca’s interactive design, integrated with React.js  
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## 🚀 YuccAI Insights  
+- 💻 **Source Code**: [View Code](https://github.com/LouisFernando1204/yuccAI-frontend)  
 
-- Configure the top-level `parserOptions` property like this:
+## 🌟 Take a Peek at YuccAI in Action! 📸  
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+    <img src="https://drive.google.com/uc?id=12PIBpZ-mB-zWGOZvUavCURuL6_U_4kcV" alt="Screenshot 1" style="width: 70%;"/>
+    <img src="https://drive.google.com/uc?id=1P4FvCOfB9bjqEjJOwfL0z4TAT8hmQKWI" alt="Screenshot 2" style="width: 70%;"/>
+    <img src="https://drive.google.com/uc?id=1QKdbP1s8kRa_mCSo8q7jJv9SjMeF-e8Z" alt="Screenshot 3" style="width: 70%;"/>
+    <img src="https://drive.google.com/uc?id=1xDZoLUkGbwmxtp2qk257dQYICaeW2tTb" alt="Screenshot 4" style="width: 70%;"/>
+</div>
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## 🤝 Contributors  
+- 🧑 Louis Fernando : [@LouisFernando1204](https://github.com/LouisFernando1204)  
+- 🧑 Yobel Nathaniel Filipus : [@yebology](https://github.com/yebology)
+- 🧑 Joren Alexander Toding : [@jhwrwe](https://github.com/jhwrwe)
+- 🧑 Steven Gonawan : [@xAnonym101](https://github.com/xAnonym101)
+- 🧑 Patrick Steven Kent : [@pstevenkent](https://github.com/pstevenkent)
