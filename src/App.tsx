@@ -40,7 +40,7 @@ function App() {
   const fetchRecommendation = async (answerSource: string) => {
     try {
       const result = await axios.get(
-        `${import.meta.env.VITE_GOLANG_API_URL}/get_all_information`
+        `${import.meta.env.VITE_GOLANG_API_URL}/api/get_all_information`
       );
       const filteredRecommendation = result.data.filter(
         (item: { answer_source: string }) => item.answer_source.includes(answerSource)

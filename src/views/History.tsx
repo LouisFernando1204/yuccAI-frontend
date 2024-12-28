@@ -26,7 +26,7 @@ export const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
     const fetchAllInformation = async () => {
       try {
         const result = await axios.get(
-          `${import.meta.env.VITE_GOLANG_API_URL}/get_all_information`
+          `${import.meta.env.VITE_GOLANG_API_URL}/api/get_all_information`
         );
         setAllInformation(result.data);
       } catch (error) {

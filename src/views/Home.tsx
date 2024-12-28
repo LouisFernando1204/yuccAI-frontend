@@ -184,7 +184,7 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
   const addNewInformation = async (question: string, answer: string, answerSource: string) => {
     try {
       const result = await axios.post(
-        `${import.meta.env.VITE_GOLANG_API_URL}/add_information`,
+        `${import.meta.env.VITE_GOLANG_API_URL}/api/add_information`,
         {
           question: question,
           answer: answer,
