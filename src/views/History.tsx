@@ -70,7 +70,7 @@ export const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
           </p>
         ) : (
           allInformation
-            .slice() // membuat salinan array agar tidak memodifikasi aslinya
+            .slice()
             .reverse()
             .map((item, index) => (
               <div

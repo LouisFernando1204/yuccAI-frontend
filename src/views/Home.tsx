@@ -11,6 +11,7 @@ import { RecommendationSection } from "../components/sections/RecommendationSect
 import { YuccaObject } from "../components/object/YuccaObject";
 import { TextGenerateEffect } from "../components/ui/text-generate-effect";
 import { QuestionAnswer } from "../utils/objectInterface";
+import angkaTerbilang from '@develoka/angka-terbilang-js';
 
 interface HomeProps {
   statusModal: boolean;
@@ -46,8 +47,10 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
     setMicOnClick(!micOnClick);
     audio.play();
     if (!micOnClick) {
+      console.log("MASUK START RECORDING");
       startRecording();
     } else {
+      console.log("MASUK STOP RECORDING");
       stopRecording();
       if (question) {
         if (isValidQuestion(question)) {
@@ -56,11 +59,10 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
           try {
             const yuccAIResponse = await askToYuccAI(question);
             await speak(yuccAIResponse.response);
-            await showPopUpResponse(yuccAIResponse.response);
-            await addNewInformation(question, yuccAIResponse.response, yuccAIResponse.source);
+            await showPopUpResponse(yuccAIResponse.response, yuccAIResponse.source);
             const surveyAnswer = sessionStorage.getItem("surveyAnswer");
             if (surveyAnswer) {
-              fetchRecommendation(surveyAnswer);
+              await fetchRecommendation(surveyAnswer);
             }
           } catch (error) {
             console.error(error);
@@ -100,10 +102,11 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
       return;
     }
     const recognition = new SpeechRecognition();
-    recognition.lang = "id-ID";
+    recognition.lang = "id";
     recognition.interimResults = true;
     recognition.onstart = () => {
       console.log("Speech recognition started.");
+      showLiveSubtitlePopup("yuccAI sedang mendengarkan...");
     };
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       const currentTranscript = Array.from(event.results)
@@ -111,12 +114,17 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
         .join("");
       setQuestion(currentTranscript);
       console.log("Recognized Text:", currentTranscript);
+      const subtitleContainer = document.getElementById("swal-live-subtitle-container");
+      if (subtitleContainer) {
+        subtitleContainer.innerText = currentTranscript;
+      }
     };
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error("Speech recognition error:", event.error);
     };
     recognition.onend = () => {
       console.log("Speech recognition stopped.");
+      Swal.close();
     };
     recognition.start();
   };
@@ -125,21 +133,77 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
     console.log("Stopped recording.");
   };
 
+  const romanToDecimal = (roman: string): number => {
+    const romanMap: { [key: string]: number } = {
+      I: 1,
+      V: 5,
+      X: 10,
+      L: 50,
+      C: 100,
+      D: 500,
+      M: 1000,
+    };
+    let total = 0;
+    let prevValue = 0;
+    for (let i = roman.length - 1; i >= 0; i--) {
+      const currentValue = romanMap[roman[i]];
+      if (!currentValue) return NaN;
+      if (currentValue < prevValue) {
+        total -= currentValue;
+      } else {
+        total += currentValue;
+      }
+      prevValue = currentValue;
+    }
+    return total;
+  };
+
   const speak = async (text: string) => {
     try {
+      let processedText = text
+        .replace(/\+/g, " tambah ")
+        .replace(/-/g, " kurang ")
+        .replace(/\*/g, " kali ")
+        .replace(/×/g, " kali ")
+        .replace(/\//g, " bagi ")
+        .replace(/÷/g, " bagi ")
+        .replace(/%/g, " persen ")
+        .replace(/=/g, " sama dengan ");
+      processedText = processedText.replace(/Rp\.?\s?(\d[\d.,]*)/g, (match, amount) => {
+        const cleanAmount = amount.replace(/[.,]/g, "");
+        const angkaKata = angkaTerbilang(parseInt(cleanAmount, 10));
+        return `rupiah ${angkaKata}`;
+      });
+      processedText = processedText.replace(/\b[MCDXLIV]+\b/gi, (match) => {
+        const decimal = romanToDecimal(match.toUpperCase());
+        if (isNaN(decimal)) return match;
+        const angkaKata = angkaTerbilang(decimal);
+        return angkaKata;
+      });
+      const formattedText = processedText.replace(/\d+/g, (match) => {
+        const number = parseInt(match, 10);
+        const angkaKata = angkaTerbilang(number);
+        return angkaKata;
+      });
+      console.log("Formatted Text: ", formattedText);
       const audioStream = await elevenlabs.generate({
         voice: "Kira",
         model_id: "eleven_turbo_v2_5",
-        text,
+        text: formattedText,
       });
       const chunks: Uint8Array[] = [];
       for await (const chunk of audioStream) {
         chunks.push(chunk);
       }
       const audioData = new Blob(chunks, { type: "audio/mpeg" });
+      const audioUrl = URL.createObjectURL(audioData);
       if (audioRef.current) {
-        audioRef.current.src = URL.createObjectURL(audioData);
+        audioRef.current.src = audioUrl;
         audioRef.current.play();
+
+        audioRef.current.onended = () => {
+          URL.revokeObjectURL(audioUrl);
+        };
       }
     } catch (error) {
       console.log(error);
@@ -168,7 +232,7 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
         try {
           const yuccAIResponse = await askToYuccAI(question);
           await speak(yuccAIResponse.response);
-          await showPopUpResponse(yuccAIResponse.response);
+          await showPopUpResponse(yuccAIResponse.response, yuccAIResponse.source);
         } catch (error) {
           console.error(error);
           await speak("Terjadi kesalahan. Silakan coba lagi.");
@@ -197,7 +261,7 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
     }
   };
 
-  const showPopUpResponse = async (yuccAIResponse: string) => {
+  const showPopUpResponse = async (yuccAIResponse: string, yuccAISource: string) => {
     try {
       const result = await Swal.fire({
         title: '',
@@ -238,14 +302,61 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
           );
         }
       });
-
       if (result.isDismissed) {
         if (audioRef.current) {
           audioRef.current.pause();
           audioRef.current.currentTime = 0;
         }
       } else {
-        console.log("Conversation is done.");
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }
+        await addNewInformation(question, yuccAIResponse, yuccAISource);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const showLiveSubtitlePopup = async (subtitleText: string) => {
+    try {
+      const result = await Swal.fire({
+        title: '',
+        html: `
+          <div style="text-align: center; font-weight: bold; font-style: italic; font-size: 1rem; color: #333;" 
+            class="animate__animated animate__fadeIn" id="swal-live-subtitle-container">
+            ${subtitleText}
+          </div>
+        `,
+        showCancelButton: false,
+        showConfirmButton: true,
+        confirmButtonText: 'Tanya Ulang',
+        customClass: {
+          popup: 'swal-modal',
+          confirmButton: 'swal-confirm-button swal-wide-button',
+          cancelButton: 'swal-cancel-button swal-wide-button',
+          actions: 'swal-two-buttons'
+        },
+        buttonsStyling: false,
+        position: "bottom",
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `
+        }
+      });
+      if (result.isConfirmed) {
+        await clickAction();
       }
     } catch (error) {
       console.log(error);

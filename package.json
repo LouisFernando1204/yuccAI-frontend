@@ -13,6 +13,7 @@
     "@11labs/react": "^0.0.4",
     "@coreui/icons": "^3.0.1",
     "@coreui/icons-react": "^2.3.0",
+    "@develoka/angka-terbilang-js": "^1.4.2",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
     "@fortawesome/fontawesome-svg-core": "^6.7.1",
