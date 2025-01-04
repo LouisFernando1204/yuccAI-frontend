@@ -17,11 +17,10 @@ Welcome to **YuccAI**, the ultimate voice assistant website designed exclusively
 4. **Dynamic Recommendations**: Frequently asked or new questions are automatically added to the recommendation section.  
 
 ## ⚙️ Tech Stack Behind YuccAI  
-- 🌐 **Frontend**: React.js  
-- 🔧 **Backend**: Golang for managing conversation data storage  
-- 🧠 **AI Models**:  
-  - Ollama Model (nomic-embed-text and mistral) integrated via Python FastAPI  
-- 🎨 **3D Model**: Blender for Yucca’s interactive design, integrated with React.js  
+- 🌐 **Frontend**: ReactTS (Typescript) 
+- 🔧 **Backend**: Golang Fiber REST API Integration (for managing conversation data storage)  
+- 🧠 **AI Models**: Ollama Model (nomic-embed-text and mistral) integrated via Python FastAPI  
+- 🎨 **3D Model**: Blender for Yucca’s interactive design, integrated with ReactTS
 
 ## 🚀 YuccAI Insights  
 - 💻 **Source Code**: [View Code](https://github.com/LouisFernando1204/yuccAI-frontend)  
