@@ -12,7 +12,7 @@ import { YuccaObject } from "../components/object/YuccaObject";
 import { TextGenerateEffect } from "../components/ui/text-generate-effect";
 import { QuestionAnswer } from "../utils/objectInterface";
 import angkaTerbilang from '@develoka/angka-terbilang-js';
-import ThreeDScene from "../components/sections/rendering_model";
+import ThreeDScene from "../components/sections/YuccaModel";
 
 interface HomeProps {
   statusModal: boolean;
@@ -370,7 +370,7 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
     <>
       <div className="flex flex-col items-center mt-10 space-y-10">
         <GreetingSection key={statusModal ? "open" : "closed"} />
-        <div className="flex justify-center w-full mb-10">
+        <div className="flex justify-center w-full">
           <ThreeDScene />
         </div>
         <RecommendationSection
