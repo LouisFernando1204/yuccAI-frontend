@@ -103,7 +103,7 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
       return;
     }
     const recognition = new SpeechRecognition();
-    recognition.lang = "id";
+    recognition.lang = "id-ID";
     recognition.interimResults = true;
     recognition.onstart = () => {
       console.log("Speech recognition started.");
@@ -370,7 +370,7 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
     <>
       <div className="flex flex-col items-center mt-10 space-y-10">
         <GreetingSection key={statusModal ? "open" : "closed"} />
-        <div className="flex justify-center w-full">
+        <div className="flex justify-center w-1/5 m-0">
           <ThreeDScene />
         </div>
         <RecommendationSection
