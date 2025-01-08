@@ -26,8 +26,19 @@ export const History: React.FC<HistoryProps> = ({ isDarkMode }) => {
     const fetchAllInformation = async () => {
       try {
         const result = await axios.get(
-          `${import.meta.env.VITE_GOLANG_API_URL}/api/get_all_information`
+          `${import.meta.env.VITE_GOLANG_API_URL}/api/get_all_information`,
+          {
+            headers: {
+              'ngrok-skip-browser-warning': 'true',
+            },
+          }
         );
+        if (result.data != null) {
+          console.log("RESULT DATA: ", result.data);
+        }
+        else {
+          console.log("GA ADA ISI WOI");
+        }
         setAllInformation(result.data);
       } catch (error) {
         console.error(error);
