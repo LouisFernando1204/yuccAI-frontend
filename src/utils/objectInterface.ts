@@ -6,5 +6,5 @@ export interface InformationOption {
 export interface QuestionAnswer {
   question: string;
   answer: string;
-  answer_source: string;
+  answersource: string;
 }
