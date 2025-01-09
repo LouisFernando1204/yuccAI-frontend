@@ -89,7 +89,7 @@ export const Home: React.FC<HomeProps> = ({ statusModal, loading, recommendation
       "bantu saya", "beri contoh", "bantu cari", "ceritakan", "topik", "tentang",
       "sejarah", "fakta", "teknologi", "ilmu pengetahuan", "cuaca", "politik",
       "ekonomi", "hiburan", "seberapa lama", "apakah ada", "jika", "sebelum",
-      "sesudah", "selama", "lokasi", "tempat terbaik"
+      "sesudah", "selama", "lokasi", "tempat terbaik", "sebutkan", "berikan"
     ];
     return validKeywords.some((keyword) => question.toLowerCase().includes(keyword));
   };
