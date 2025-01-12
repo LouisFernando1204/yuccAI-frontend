@@ -125,7 +125,9 @@ export const Home: React.FC<HomeProps> = ({
             setQuestion("");
           }
         } else {
+          // ============================== //
           // play failed to find answer audio then speak
+          // ============================== //
           failedToFindAnswerAudio.play();
           await speak("Maaf, saya tidak mengerti. Silakan coba lagi.");
         }
@@ -593,7 +595,6 @@ export const Home: React.FC<HomeProps> = ({
     if (!statusModal) {
       greeting();
     }
-
   }, [statusModal]);
 
   return (
