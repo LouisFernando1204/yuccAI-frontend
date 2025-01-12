@@ -4,6 +4,9 @@ import axios from "axios";
 import { ElevenLabsClient } from "elevenlabs";
 import Swal from "sweetalert2";
 import zapsplat_multimedia_button_click_bright_003_92100 from "../assets/sound/zapsplat_multimedia_button_click_bright_003_92100.mp3";
+import failedToFindAnswer from "../assets/sound/failedToFindAnswer.mp3";
+import searchingAnswer from "../assets/sound/searchingAnswer.mp3";
+import successFindAnswer from "../assets/sound/successFindAnswer.mp3";
 import "animate.css";
 import { GreetingSection } from "../components/sections/GreetingSection";
 import { MicrophoneSection } from "../components/sections/MicrophoneSection";
@@ -33,11 +36,15 @@ export const Home: React.FC<HomeProps> = ({
   const [micOnClick, setMicOnClick] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [showChat, setShowChat] = useState<boolean>(true);
-  const [isSayUniqueFact, setIsSayUniqueFact] = useState<boolean>(true);
+  // const [isSayUniqueFact, setIsSayUniqueFact] = useState<boolean>(true);
+  const [isWait, setIsWait] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
 
-
   const audio = new Audio(zapsplat_multimedia_button_click_bright_003_92100);
+  const searchingAnswerAudio = new Audio(searchingAnswer);
+  const successfullyFindAnswerAudio = new Audio(successFindAnswer);
+  const failedToFindAnswerAudio = new Audio(failedToFindAnswer);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const speakRandomThinkingMessage = () => {
@@ -51,6 +58,7 @@ export const Home: React.FC<HomeProps> = ({
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
     speak(randomMessage);
   };
+
   const elevenlabs = new ElevenLabsClient({
     apiKey: `${import.meta.env.VITE_ELEVENLABS_API_KEY}`,
   });
@@ -68,18 +76,48 @@ export const Home: React.FC<HomeProps> = ({
         if (isValidQuestion(question)) {
           setIsDisabled(true);
           speakRandomThinkingMessage();
+
+          // ============================== //
+          // play searching answer audio
+          searchingAnswerAudio.loop = true;
+          searchingAnswerAudio.play();
+          // ============================== //
+
           try {
             const yuccAIResponse = await askToYuccAI(question);
-            await speak(yuccAIResponse.response);
-            await showPopUpResponse(
-              yuccAIResponse.response,
-              yuccAIResponse.source
-            );
-            const surveyAnswer = sessionStorage.getItem("surveyAnswer");
-            if (surveyAnswer) {
-              await fetchRecommendation(surveyAnswer);
+
+            if (yuccAIResponse) {
+              // ============================== //
+              // stop searching answer audio
+              searchingAnswerAudio.pause();
+              searchingAnswerAudio.currentTime = 0;
+              // ============================== //
+
+              // ============================== //
+              // if jawaban contains "maaf" --> play failed to find answer audio then speak
+              // else --> play success find answer and then speak
+              (yuccAIResponse.response.toLowerCase().includes("maaf")
+                ? failedToFindAnswerAudio
+                : successfullyFindAnswerAudio
+              ).play();
+              // ============================== //
+
+              await speak(yuccAIResponse.response);
+              await showPopUpResponse(
+                yuccAIResponse.response,
+                yuccAIResponse.source
+              );
+              const surveyAnswer = sessionStorage.getItem("surveyAnswer");
+              if (surveyAnswer) {
+                await fetchRecommendation(surveyAnswer);
+              }
             }
           } catch (error) {
+            // ============================== //
+            // stop searching answer audio
+            searchingAnswerAudio.pause();
+            searchingAnswerAudio.currentTime = 0;
+            // ============================== //
             console.error(error);
             await speak("Terjadi kesalahan. Silakan coba lagi.");
           } finally {
@@ -87,6 +125,8 @@ export const Home: React.FC<HomeProps> = ({
             setQuestion("");
           }
         } else {
+          // play failed to find answer audio then speak
+          failedToFindAnswerAudio.play();
           await speak("Maaf, saya tidak mengerti. Silakan coba lagi.");
         }
       }
@@ -440,20 +480,15 @@ export const Home: React.FC<HomeProps> = ({
     }
   };
 
-  const sayUniqueFact = async () => {
-
-    setIsSayUniqueFact(true);
-
-    const uniqueFactsLength = uniqueFacts.length;
-    const randomGenerator = Math.floor(Math.random() * uniqueFactsLength)
-    const chooseFact = uniqueFacts[randomGenerator]
-    console.log(chooseFact)
+  const greeting = async () => {
+    const text =
+      "Jalan jalan ke luar kota. Jangan lupa membawa jamu. Perkenalkan namaku Yucca. Siap menjadi asistenmu!";
 
     try {
       const audioStream = await elevenlabs.generate({
         voice: "Kira",
         model_id: "eleven_turbo_v2_5",
-        text: chooseFact,
+        text: text,
       });
       const chunks: Uint8Array[] = [];
       for await (const chunk of audioStream) {
@@ -463,24 +498,23 @@ export const Home: React.FC<HomeProps> = ({
       const audioUrl = URL.createObjectURL(audioData);
       if (audioRef.current) {
         audioRef.current.src = audioUrl;
+        audioRef.current.playbackRate = 0.9;
         audioRef.current.play();
 
         audioRef.current.onended = () => {
           URL.revokeObjectURL(audioUrl);
         };
       }
+    } catch (error) {
+      console.log(error);
     }
-    catch (error) {
-      console.log(error)
-    }
-    finally {
-      setIsSayUniqueFact(false);
-    }
-  }
+  };
+
+  const waiting = async () => {};
 
   const handleChatMessage = (question: string, subtitleText: string) => {
     // HAPUS INI NANTI LOUIS
-    sayUniqueFact();
+    // sayUniqueFact();
 
     // YANG DBAWAH INI JGN
     setIsChatOpen(!isChatOpen);
@@ -556,14 +590,18 @@ export const Home: React.FC<HomeProps> = ({
   const closeChat = () => {};
 
   useEffect(() => {
+    if (!statusModal) {
+      greeting();
+    }
+
   }, [statusModal]);
 
   return (
     <>
-      <img
+      {/* <img
         src="https://drive.google.com/thumbnail?id=1NbzMEhEQOVM2K370_-SmYHFOBpJRu2sk&sz=1000.jpg"
         alt="asdasd"
-      />
+      /> */}
 
       <div className="flex flex-col items-center mt-10 space-y-10">
         <GreetingSection key={statusModal ? "open" : "closed"} />
