@@ -10,17 +10,14 @@ import { QuestionAnswer } from "./utils/objectInterface";
 import axios from "axios";
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
-  const [isNavigateToHistory, setIsNavigateToHistory] = useState<boolean>(false);
+  const [isNavigateToHistory, setIsNavigateToHistory] =
+    useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(true);
-  const [recommendationLoading, setRecommendationLoading] = useState<boolean>(false);
+  const [recommendationLoading, setRecommendationLoading] =
+    useState<boolean>(false);
   const [recommendation, setRecommendation] = useState<QuestionAnswer[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
-
-  const switchMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
 
   const navigateToHistory = () => {
     setIsNavigateToHistory(true);
@@ -43,12 +40,13 @@ function App() {
         `${import.meta.env.VITE_GOLANG_API_URL}/api/get_all_information`,
         {
           headers: {
-            'ngrok-skip-browser-warning': 'true',
+            "ngrok-skip-browser-warning": "true",
           },
         }
       );
       const filteredRecommendation = result.data.filter(
-        (item: { answersource: string }) => item.answersource.includes(answerSource)
+        (item: { answersource: string }) =>
+          item.answersource.includes(answerSource)
       );
       setRecommendation(filteredRecommendation);
     } catch (error) {
@@ -76,26 +74,24 @@ function App() {
     setTimeout(() => {
       setIsLoading(false);
     }, 3000);
-  })
+  });
 
   if (isLoading) {
-    return <LoadingScreen />
+    return <LoadingScreen />;
   }
 
   return (
     <>
       <div
-        className={`min-h-screen w-screen font-poppins ${isDarkMode ? "text-light bg-dark" : "text-dark bg-light"
+        className={`relative min-h-screen w-screen font-poppins text-darkOrange bg-darkNavy
           }`}
       >
         <Navbar
-          switchMode={switchMode}
-          isDarkMode={isDarkMode}
           navigateToHistory={navigateToHistory}
           navigateToHome={navigateToHome}
           isNavigateToHistory={isNavigateToHistory}
         />
-        <div className="m-4 lg:m-10">
+        <div className="mb-4 lg:m-10">
           <Routes>
             <Route
               path="/"
@@ -108,7 +104,9 @@ function App() {
                 />
               }
             />
-            <Route path="/history" element={<History isDarkMode={isDarkMode} />} />
+            <Route
+              path="/history"
+            />
           </Routes>
         </div>
         <Footer

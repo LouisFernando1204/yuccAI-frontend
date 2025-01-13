@@ -15,9 +15,6 @@ import { TextGenerateEffect } from "../components/ui/text-generate-effect";
 import { QuestionAnswer } from "../utils/objectInterface";
 import angkaTerbilang from "@develoka/angka-terbilang-js";
 import YuccaModel from "../components/object/YuccaModel";
-import CIcon from "@coreui/icons-react";
-import { cilChatBubble, cilMicrophone, cilNotes } from "@coreui/icons";
-import { uniqueFacts } from "../utils/list";
 
 interface HomeProps {
   statusModal: boolean;
@@ -36,7 +33,6 @@ export const Home: React.FC<HomeProps> = ({
   const [micOnClick, setMicOnClick] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [showChat, setShowChat] = useState<boolean>(true);
-  // const [isSayUniqueFact, setIsSayUniqueFact] = useState<boolean>(true);
   const [isWait, setIsWait] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
 
@@ -46,6 +42,12 @@ export const Home: React.FC<HomeProps> = ({
   const failedToFindAnswerAudio = new Audio(failedToFindAnswer);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const [animation, setAnimation] = useState<string>("");
+
+  const switchAnimation = (animation: string) => {
+    setAnimation(animation);
+  };
 
   const speakRandomThinkingMessage = () => {
     const messages = [
@@ -593,9 +595,14 @@ export const Home: React.FC<HomeProps> = ({
 
   useEffect(() => {
     if (!statusModal) {
-      greeting();
+      // setAnimation("../assets/video/findAnswerVideo.mp4")
+      // greeting();
     }
   }, [statusModal]);
+
+  useEffect(() => {
+    setAnimation("findAnswerVideo");
+  }, []);
 
   return (
     <>
@@ -605,20 +612,20 @@ export const Home: React.FC<HomeProps> = ({
       /> */}
 
       <div className="flex flex-col items-center mt-10 space-y-10">
-        <GreetingSection key={statusModal ? "open" : "closed"} />
+        {/* <GreetingSection key={statusModal ? "open" : "closed"} /> */}
         <div className="flex justify-center w-1/5 m-0">
-          <YuccaModel />
+          <YuccaModel animation={animation} />
         </div>
+        <MicrophoneSection
+          clickAction={clickAction}
+          isDisabled={isDisabled}
+          micOnClick={micOnClick}
+        />
         <RecommendationSection
           loading={loading}
           isDisabled={isDisabled}
           recommendation={recommendation}
           onRecommendationClick={onRecommendationClick}
-        />
-        <MicrophoneSection
-          clickAction={clickAction}
-          isDisabled={isDisabled}
-          micOnClick={micOnClick}
         />
         {showChat && (
           <div className="fixed bottom-1 right-1">
@@ -629,9 +636,20 @@ export const Home: React.FC<HomeProps> = ({
                   `Tentu, berikut adalah fakultas yang ada di UC:\n\n1. School of Business Management\nhttps://imgs.search.brave.com/ZW16koXAvfxrot-NprvOxwBmgDH36uakg8JFpZ-y1e8/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kaWVu/Zy5ibG9iLmNvcmUu/d2luZG93cy5uZXQv/d2VibWFzdGVyLzIw/MjEvMDYvTG9nby1V/Qy1BcHBsZS1BY2Fk/ZW15LVVDLmpwZw\n2. School of Creative Industry\nhttps://iili.io/2rLrNRa.jpg\n3. School of Tourism\n4. School of Information Technology\n5. School of Medicine\n6. School of Dental Medicine\n7. School of Psychology\n8. School of Communication and Media Business  `
                 )
               }
-              className={`rounded-full bg-primary cursor-pointer shadow-lg animate-bounce`}
+              className={`rounded-full bg-cream cursor-pointer shadow-lg animate-bounce`}
             >
-              <CIcon icon={cilChatBubble} className="size-16 md:size-20 p-3" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="size-16 md:size-20 p-3"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M4.804 21.644A6.707 6.707 0 0 0 6 21.75a6.721 6.721 0 0 0 3.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 0 1-.814 1.686.75.75 0 0 0 .44 1.223ZM8.25 10.875a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25ZM10.875 12a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875-1.125a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z"
+                  clipRule="evenodd"
+                />
+              </svg>
             </button>
           </div>
         )}
