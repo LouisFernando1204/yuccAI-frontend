@@ -111,7 +111,7 @@ export const Home: React.FC<HomeProps> = ({
               );
               const surveyAnswer = sessionStorage.getItem("surveyAnswer");
               if (surveyAnswer) {
-                await fetchRecommendation(surveyAnswer);
+                fetchRecommendation(surveyAnswer);
               }
             }
           } catch (error) {
@@ -138,7 +138,68 @@ export const Home: React.FC<HomeProps> = ({
   };
 
   // buat nanya by text
-  const askByText = async (question: string) => {};
+  const askByText = async (question: string) => {
+    if (question) {
+      if (isValidQuestion(question)) {
+        setIsDisabled(true);
+        speakRandomThinkingMessage();
+
+        // ============================== //
+        // play searching answer audio
+        searchingAnswerAudio.loop = true;
+        searchingAnswerAudio.play();
+        // ============================== //
+
+        try {
+          const yuccAIResponse = await askToYuccAI(question);
+
+          if (yuccAIResponse) {
+            // ============================== //
+            // stop searching answer audio
+            searchingAnswerAudio.pause();
+            searchingAnswerAudio.currentTime = 0;
+            // ============================== //
+
+            // ============================== //
+            // if jawaban contains "maaf" --> play failed to find answer audio then speak
+            // else --> play success find answer and then speak
+            (yuccAIResponse.response.toLowerCase().includes("maaf")
+              ? failedToFindAnswerAudio
+              : successfullyFindAnswerAudio
+            ).play();
+            // ============================== //
+
+            await speak(yuccAIResponse.response);
+            await showPopUpResponse(
+              yuccAIResponse.response,
+              yuccAIResponse.source
+            );
+            const surveyAnswer = sessionStorage.getItem("surveyAnswer");
+            if (surveyAnswer) {
+              fetchRecommendation(surveyAnswer);
+            }
+          }
+        } catch (error) {
+          // ============================== //
+          // stop searching answer audio
+          searchingAnswerAudio.pause();
+          searchingAnswerAudio.currentTime = 0;
+          // ============================== //
+          console.error(error);
+          await speak("Terjadi kesalahan. Silakan coba lagi.");
+        } finally {
+          setIsDisabled(false);
+          setQuestion("");
+        }
+      } else {
+        // ============================== //
+        // play failed to find answer audio then speak
+        // ============================== //
+        failedToFindAnswerAudio.play();
+        await speak("Maaf, saya tidak mengerti. Silakan coba lagi.");
+      }
+    }
+  };
 
   const isValidQuestion = (question: string): boolean => {
     const validKeywords = [
@@ -619,7 +680,7 @@ export const Home: React.FC<HomeProps> = ({
           isDisabled={isDisabled}
           micOnClick={micOnClick}
         />
-        <TextSection askByText={askByText} />
+        <TextSection askByText={askByText} isDisabled={isDisabled} />
         <RecommendationSection
           loading={loading}
           isDisabled={isDisabled}

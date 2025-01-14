@@ -2,9 +2,13 @@ import React, { useState } from "react";
 
 interface TextSectionProps {
   askByText: (question: string) => void;
+  isDisabled: boolean;
 }
 
-export const TextSection: React.FC<TextSectionProps> = ({ askByText }) => {
+export const TextSection: React.FC<TextSectionProps> = ({
+  askByText,
+  isDisabled,
+}) => {
   const [question, setQuestion] = useState("");
 
   return (
@@ -24,7 +28,7 @@ export const TextSection: React.FC<TextSectionProps> = ({ askByText }) => {
           viewBox="0 0 24 24"
           className="size-6 md:size-20 p-1 text-darkOrange"
           fill="currentColor"
-          onClick={() => askByText(question)}
+          onClick={() => !isDisabled && askByText(question)}
         >
           <path
             fillRule="evenodd"
