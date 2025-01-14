@@ -22,7 +22,7 @@ export const RecommendationSection: React.FC<RecommendationSectionProps> = ({
     text.charAt(0).toUpperCase() + text.slice(1);
 
   return (
-    <div className="flex justify-start items-start w-full">
+    <div className="flex justify-start items-start w-full px-3">
       <div
         data-aos="fade-up"
         data-aos-anchor-placement="top-bottom"

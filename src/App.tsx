@@ -91,7 +91,7 @@ function App() {
           navigateToHome={navigateToHome}
           isNavigateToHistory={isNavigateToHistory}
         />
-        <div className="mb-4 lg:m-10">
+        <div className="my-4 lg:m-10">
           <Routes>
             <Route
               path="/"

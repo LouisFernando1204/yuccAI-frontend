@@ -8,13 +8,13 @@ import failedToFindAnswer from "../assets/sound/failedToFindAnswer.mp3";
 import searchingAnswer from "../assets/sound/searchingAnswer.mp3";
 import successFindAnswer from "../assets/sound/successFindAnswer.mp3";
 import "animate.css";
-import { GreetingSection } from "../components/sections/GreetingSection";
 import { MicrophoneSection } from "../components/sections/MicrophoneSection";
 import { RecommendationSection } from "../components/sections/RecommendationSection";
 import { TextGenerateEffect } from "../components/ui/text-generate-effect";
 import { QuestionAnswer } from "../utils/objectInterface";
 import angkaTerbilang from "@develoka/angka-terbilang-js";
 import YuccaModel from "../components/object/YuccaModel";
+import { TextSection } from "../components/sections/TextSection";
 
 interface HomeProps {
   statusModal: boolean;
@@ -136,6 +136,9 @@ export const Home: React.FC<HomeProps> = ({
       }
     }
   };
+
+  // buat nanya by text
+  const askByText = async (question: string) => {};
 
   const isValidQuestion = (question: string): boolean => {
     const validKeywords = [
@@ -521,12 +524,8 @@ export const Home: React.FC<HomeProps> = ({
     // sayUniqueFact();
 
     // YANG DBAWAH INI JGN
-    setIsChatOpen(!isChatOpen);
-    if (isChatOpen) {
-      openChat(question, subtitleText);
-    } else {
-      closeChat();
-    }
+    setIsChatOpen(true);
+    openChat(question, subtitleText);
   };
 
   const openChat = async (question: string, subtitleText: string) => {
@@ -611,8 +610,7 @@ export const Home: React.FC<HomeProps> = ({
         alt="asdasd"
       /> */}
 
-      <div className="flex flex-col items-center mt-10 space-y-10">
-        {/* <GreetingSection key={statusModal ? "open" : "closed"} /> */}
+      <div className="flex flex-col items-center mt-10 space-y-6">
         <div className="flex justify-center w-1/5 m-0">
           <YuccaModel animation={animation} />
         </div>
@@ -621,6 +619,7 @@ export const Home: React.FC<HomeProps> = ({
           isDisabled={isDisabled}
           micOnClick={micOnClick}
         />
+        <TextSection askByText={askByText} />
         <RecommendationSection
           loading={loading}
           isDisabled={isDisabled}

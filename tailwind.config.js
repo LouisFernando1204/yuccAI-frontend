@@ -26,6 +26,7 @@ module.exports = {
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
+        dynaPuff: ["DynaPuff", "sans-serif"],
         sans: ['Inter', 'sans-serif'],
       },
       boxShadow: {

@@ -8,7 +8,7 @@ interface SurveyModalProps {
 export const SurveyModal: React.FC<SurveyModalProps> = ({ chooseAnswer }) => {
   return (
     <div
-      className={`fixed flex items-center justify-center w-screen h-screen inset-0 bg-dark bg-opacity-50`}
+      className={`fixed flex items-center justify-center w-screen h-screen inset-0 bg-dark bg-opacity-50 z-50`}
     >
       {" "}
       <div
@@ -25,7 +25,7 @@ export const SurveyModal: React.FC<SurveyModalProps> = ({ chooseAnswer }) => {
             <div
               key={index}
               onClick={() => chooseAnswer(info.key)}
-              className="outline outline-primary cursor-pointer hover:scale-105 hover:bg-primary duration-200 rounded-xl p-4 md:p-5"
+              className="outline outline-darkOrange cursor-pointer hover:scale-105 hover:bg-darkOrange hover:text-white duration-200 rounded-xl p-4 md:p-5"
             >
               <h1 className="text-sm md:text-md font-normal"> {info.words}</h1>
             </div>
