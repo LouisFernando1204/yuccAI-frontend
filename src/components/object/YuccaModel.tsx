@@ -8,8 +8,7 @@ interface YuccaModelProps {
 const YuccaModel: React.FC<YuccaModelProps> = ({ animation }) => {
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, [animation]);
 
   return (
     <div style={{ position: "relative" }}>
@@ -34,6 +33,21 @@ const YuccaModel: React.FC<YuccaModelProps> = ({ animation }) => {
       <div className="w-screen h-auto">
         {animation == "findAnswerVideo" && (
           <video src={findAnswerVideo} autoPlay loop muted playsInline />
+        )}
+        {animation == "idleVideo" && (
+          <video src="" autoPlay loop muted playsInline />
+        )}
+        {animation == "goodAnswerVideo" && (
+          <video src="" autoPlay loop muted playsInline />
+        )}
+        {animation == "badAnswerVideo" && (
+          <video src="" autoPlay loop muted playsInline />
+        )}{" "}
+        {animation == "introVideo" && (
+          <video src="" autoPlay loop muted playsInline />
+        )}{" "}
+        {animation == "ticklishVideo" && (
+          <video src="" autoPlay loop muted playsInline />
         )}
       </div>
     </div>
