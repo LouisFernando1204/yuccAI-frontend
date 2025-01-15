@@ -1,7 +1,6 @@
 import Swal from "sweetalert2";
 
 export const getResponse = async (question: string, subtitleText: string) => {
-  console.log(question)
   try {
     await Swal.fire({
       title: "",

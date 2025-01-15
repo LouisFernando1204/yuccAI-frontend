@@ -11,6 +11,7 @@ export const askByText = async (
   failedToFindAnswerAudio: HTMLAudioElement,
   successfullyFindAnswerAudio: HTMLAudioElement,
   setAnswer: React.Dispatch<React.SetStateAction<string>>,
+  setAnimation: React.Dispatch<React.SetStateAction<string>>,
   fetchRecommendation: (answerSource: string) => void
 ) => {
   await processQuestion(
@@ -22,6 +23,7 @@ export const askByText = async (
     failedToFindAnswerAudio,
     successfullyFindAnswerAudio,
     setAnswer,
+    setAnimation,
     fetchRecommendation
   );
 };
@@ -35,6 +37,7 @@ export const onRecommendationClick = async (
   failedToFindAnswerAudio: HTMLAudioElement,
   successfullyFindAnswerAudio: HTMLAudioElement,
   setAnswer: React.Dispatch<React.SetStateAction<string>>,
+  setAnimation: React.Dispatch<React.SetStateAction<string>>,
   fetchRecommendation: (answerSource: string) => void
 ) => {
   await processQuestion(
@@ -46,6 +49,7 @@ export const onRecommendationClick = async (
     failedToFindAnswerAudio,
     successfullyFindAnswerAudio,
     setAnswer,
+    setAnimation,
     fetchRecommendation
   );
 };
@@ -59,12 +63,15 @@ export const processQuestion = async (
   failedToFindAnswerAudio: HTMLAudioElement,
   successfullyFindAnswerAudio: HTMLAudioElement,
   setAnswer: React.Dispatch<React.SetStateAction<string>>,
+  setAnimation: React.Dispatch<React.SetStateAction<string>>,
   fetchRecommendation: (answerSource: string) => void
 ) => {
   if (question) {
     if (isValidQuestion(question)) {
       setIsDisabled(true);
+
       await speakRandomThinkingMessage(audioRef);
+      setAnimation("searchingAnswerVideo");
 
       await new Promise((resolve) => setTimeout(resolve, 4000));
 
@@ -78,17 +85,21 @@ export const processQuestion = async (
           searchingAnswerAudio.pause();
           searchingAnswerAudio.currentTime = 0;
 
-          yuccAIResponse.response.toLowerCase().includes("maaf")
-            ? answerResponse(
-                yuccAIResponse.response,
-                failedToFindAnswerAudio,
-                audioRef
-              )
-            : answerResponse(
-                yuccAIResponse.response,
-                successfullyFindAnswerAudio,
-                audioRef
-              );
+          if (yuccAIResponse.response.toLowerCase().includes("maaf")) {
+            setAnimation("goodAnswerVideo");
+            answerResponse(
+              yuccAIResponse.response,
+              failedToFindAnswerAudio,
+              audioRef
+            );
+          } else {
+            setAnimation("goodAnswerVideo");
+            answerResponse(
+              yuccAIResponse.response,
+              successfullyFindAnswerAudio,
+              audioRef
+            );
+          }
 
           await addNewInformation(
             question,

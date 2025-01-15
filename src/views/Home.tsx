@@ -46,7 +46,7 @@ export const Home: React.FC<HomeProps> = ({
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const [animation, setAnimation] = useState<string>("");
+  const [animation, setAnimation] = useState<string>("goodAnswerVideo");
 
   const clickAction = async () => {
     setMicOnClick(!micOnClick);
@@ -185,8 +185,8 @@ export const Home: React.FC<HomeProps> = ({
   }, [statusModal]);
 
   useEffect(() => {
-    setAnimation("findAnswerVideo");
-  }, []);
+    // setAnimation("findAnswerVideo");
+  }, [animation]);
 
   const handleAskByVoice = async () => {
     setShowChat(false);
@@ -199,6 +199,7 @@ export const Home: React.FC<HomeProps> = ({
       failedToFindAnswerAudio,
       successfullyFindAnswerAudio,
       setAnswer,
+      setAnimation,
       fetchRecommendation
     );
     setShowChat(true);
@@ -215,6 +216,7 @@ export const Home: React.FC<HomeProps> = ({
       failedToFindAnswerAudio,
       successfullyFindAnswerAudio,
       setAnswer,
+      setAnimation,
       fetchRecommendation
     );
     setShowChat(true);
@@ -231,6 +233,7 @@ export const Home: React.FC<HomeProps> = ({
       failedToFindAnswerAudio,
       successfullyFindAnswerAudio,
       setAnswer,
+      setAnimation,
       fetchRecommendation
     );
     setShowChat(true);
@@ -263,10 +266,6 @@ export const Home: React.FC<HomeProps> = ({
           <div className="fixed bottom-1 right-1">
             <button
               onClick={() =>
-                // openChat(
-                //   "Apa saja makanan yang ada di sekitar Universitas Ciputra Surabaya?",
-                //   `Tentu, berikut adalah fakultas yang ada di UC:\n\n1. School of Business Management\nhttps://imgs.search.brave.com/ZW16koXAvfxrot-NprvOxwBmgDH36uakg8JFpZ-y1e8/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kaWVu/Zy5ibG9iLmNvcmUu/d2luZG93cy5uZXQv/d2VibWFzdGVyLzIw/MjEvMDYvTG9nby1V/Qy1BcHBsZS1BY2Fk/ZW15LVVDLmpwZw\n2. School of Creative Industry\nhttps://iili.io/2rLrNRa.jpg\n3. School of Tourism\n4. School of Information Technology\n5. School of Medicine\n6. School of Dental Medicine\n7. School of Psychology\n8. School of Communication and Media Business  `
-                // )
                 openChat(question, answer)
               }
               className={`rounded-full bg-cream cursor-pointer shadow-lg animate-bounce`}
