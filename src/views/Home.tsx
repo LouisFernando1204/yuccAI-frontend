@@ -1,8 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import { createRoot } from "react-dom/client";
-import axios from "axios";
-import { ElevenLabsClient } from "elevenlabs";
-import Swal from "sweetalert2";
 import zapsplat_multimedia_button_click_bright_003_92100 from "../assets/sound/zapsplat_multimedia_button_click_bright_003_92100.mp3";
 import failedToFindAnswer from "../assets/sound/failedToFindAnswer.mp3";
 import searchingAnswer from "../assets/sound/searchingAnswer.mp3";
@@ -10,11 +6,17 @@ import successFindAnswer from "../assets/sound/successFindAnswer.mp3";
 import "animate.css";
 import { MicrophoneSection } from "../components/sections/MicrophoneSection";
 import { RecommendationSection } from "../components/sections/RecommendationSection";
-import { TextGenerateEffect } from "../components/ui/text-generate-effect";
 import { QuestionAnswer } from "../utils/objectInterface";
-import angkaTerbilang from "@develoka/angka-terbilang-js";
 import YuccaModel from "../components/object/YuccaModel";
 import { TextSection } from "../components/sections/TextSection";
+import { speak } from "../utils/helper";
+import { getResponse } from "../utils/popup";
+import {
+  askByText,
+  onRecommendationClick,
+  processQuestion,
+} from "../utils/handler";
+import Swal from "sweetalert2";
 
 interface HomeProps {
   statusModal: boolean;
@@ -30,11 +32,12 @@ export const Home: React.FC<HomeProps> = ({
   fetchRecommendation,
 }) => {
   const [question, setQuestion] = useState<string>("");
+  const [answer, setAnswer] = useState<string>("");
+
   const [micOnClick, setMicOnClick] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
-  const [showChat, setShowChat] = useState<boolean>(true);
+  const [showChat, setShowChat] = useState<boolean>(false);
   const [isWait, setIsWait] = useState<boolean>(false);
-  const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
 
   const audio = new Audio(zapsplat_multimedia_button_click_bright_003_92100);
   const searchingAnswerAudio = new Audio(searchingAnswer);
@@ -45,26 +48,6 @@ export const Home: React.FC<HomeProps> = ({
 
   const [animation, setAnimation] = useState<string>("");
 
-  const switchAnimation = (animation: string) => {
-    setAnimation(animation);
-  };
-
-  const speakRandomThinkingMessage = () => {
-    const messages = [
-      "Tunggu ya, YuccAI lagi mikir keras buat kasih jawaban yang pas buat kamu.",
-      "Sabar sebentar, YuccAI lagi nyari solusi terbaik nih!",
-      "Sebentar ya, YuccAI lagi sibuk nyusun jawaban kece buat kamu.",
-      "Mohon tunggu sebentar, YuccAI lagi ngecek info yang paling cocok buat kamu.",
-      "Tenang aja, YuccAI lagi brainstorming biar jawabannya keren dan pas.",
-    ];
-    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-    speak(randomMessage);
-  };
-
-  const elevenlabs = new ElevenLabsClient({
-    apiKey: `${import.meta.env.VITE_ELEVENLABS_API_KEY}`,
-  });
-
   const clickAction = async () => {
     setMicOnClick(!micOnClick);
     audio.play();
@@ -74,192 +57,12 @@ export const Home: React.FC<HomeProps> = ({
     } else {
       console.log("MASUK STOP RECORDING");
       stopRecording();
-      if (question) {
-        if (isValidQuestion(question)) {
-          setIsDisabled(true);
-          speakRandomThinkingMessage();
-
-          // ============================== //
-          // play searching answer audio
-          searchingAnswerAudio.loop = true;
-          searchingAnswerAudio.play();
-          // ============================== //
-
-          try {
-            const yuccAIResponse = await askToYuccAI(question);
-
-            if (yuccAIResponse) {
-              // ============================== //
-              // stop searching answer audio
-              searchingAnswerAudio.pause();
-              searchingAnswerAudio.currentTime = 0;
-              // ============================== //
-
-              // ============================== //
-              // if jawaban contains "maaf" --> play failed to find answer audio then speak
-              // else --> play success find answer and then speak
-              (yuccAIResponse.response.toLowerCase().includes("maaf")
-                ? failedToFindAnswerAudio
-                : successfullyFindAnswerAudio
-              ).play();
-              // ============================== //
-
-              await speak(yuccAIResponse.response);
-              await showPopUpResponse(
-                yuccAIResponse.response,
-                yuccAIResponse.source
-              );
-              const surveyAnswer = sessionStorage.getItem("surveyAnswer");
-              if (surveyAnswer) {
-                fetchRecommendation(surveyAnswer);
-              }
-            }
-          } catch (error) {
-            // ============================== //
-            // stop searching answer audio
-            searchingAnswerAudio.pause();
-            searchingAnswerAudio.currentTime = 0;
-            // ============================== //
-            console.error(error);
-            await speak("Terjadi kesalahan. Silakan coba lagi.");
-          } finally {
-            setIsDisabled(false);
-            setQuestion("");
-          }
-        } else {
-          // ============================== //
-          // play failed to find answer audio then speak
-          // ============================== //
-          failedToFindAnswerAudio.play();
-          await speak("Maaf, saya tidak mengerti. Silakan coba lagi.");
-        }
-      }
+      await handleAskByVoice();
     }
   };
 
-  // buat nanya by text
-  const askByText = async (question: string) => {
-    if (question) {
-      if (isValidQuestion(question)) {
-        setIsDisabled(true);
-        speakRandomThinkingMessage();
-
-        // ============================== //
-        // play searching answer audio
-        searchingAnswerAudio.loop = true;
-        searchingAnswerAudio.play();
-        // ============================== //
-
-        try {
-          const yuccAIResponse = await askToYuccAI(question);
-
-          if (yuccAIResponse) {
-            // ============================== //
-            // stop searching answer audio
-            searchingAnswerAudio.pause();
-            searchingAnswerAudio.currentTime = 0;
-            // ============================== //
-
-            // ============================== //
-            // if jawaban contains "maaf" --> play failed to find answer audio then speak
-            // else --> play success find answer and then speak
-            (yuccAIResponse.response.toLowerCase().includes("maaf")
-              ? failedToFindAnswerAudio
-              : successfullyFindAnswerAudio
-            ).play();
-            // ============================== //
-
-            await speak(yuccAIResponse.response);
-            await showPopUpResponse(
-              yuccAIResponse.response,
-              yuccAIResponse.source
-            );
-            const surveyAnswer = sessionStorage.getItem("surveyAnswer");
-            if (surveyAnswer) {
-              fetchRecommendation(surveyAnswer);
-            }
-          }
-        } catch (error) {
-          // ============================== //
-          // stop searching answer audio
-          searchingAnswerAudio.pause();
-          searchingAnswerAudio.currentTime = 0;
-          // ============================== //
-          console.error(error);
-          await speak("Terjadi kesalahan. Silakan coba lagi.");
-        } finally {
-          setIsDisabled(false);
-          setQuestion("");
-        }
-      } else {
-        // ============================== //
-        // play failed to find answer audio then speak
-        // ============================== //
-        failedToFindAnswerAudio.play();
-        await speak("Maaf, saya tidak mengerti. Silakan coba lagi.");
-      }
-    }
-  };
-
-  const isValidQuestion = (question: string): boolean => {
-    const validKeywords = [
-      "siapa",
-      "apa",
-      "bagaimana",
-      "kenapa",
-      "kapan",
-      "di mana",
-      "berapa",
-      "mengapa",
-      "siapa yang",
-      "apa yang",
-      "bagaimana cara",
-      "bagaimana jika",
-      "apakah",
-      "rekomendasi",
-      "saran",
-      "bisa kasih ide",
-      "bisa bantu",
-      "apa solusi",
-      "butuh bantuan",
-      "pendapat",
-      "apa yang kamu pikirkan",
-      "menurutmu",
-      "bagaimana menurutmu",
-      "apakah kamu setuju",
-      "apakah itu baik",
-      "jelaskan",
-      "beri tahu",
-      "tunjukkan",
-      "beri penjelasan",
-      "bantu saya",
-      "beri contoh",
-      "bantu cari",
-      "ceritakan",
-      "topik",
-      "tentang",
-      "sejarah",
-      "fakta",
-      "teknologi",
-      "ilmu pengetahuan",
-      "cuaca",
-      "politik",
-      "ekonomi",
-      "hiburan",
-      "seberapa lama",
-      "apakah ada",
-      "jika",
-      "sebelum",
-      "sesudah",
-      "selama",
-      "lokasi",
-      "tempat terbaik",
-      "sebutkan",
-      "berikan",
-    ];
-    return validKeywords.some((keyword) =>
-      question.toLowerCase().includes(keyword)
-    );
+  const stopRecording = () => {
+    console.log("Recording stopped.");
   };
 
   const startRecording = () => {
@@ -297,211 +100,6 @@ export const Home: React.FC<HomeProps> = ({
       Swal.close();
     };
     recognition.start();
-  };
-
-  const stopRecording = () => {
-    console.log("Stopped recording.");
-  };
-
-  const romanToDecimal = (roman: string): number => {
-    const romanMap: { [key: string]: number } = {
-      I: 1,
-      V: 5,
-      X: 10,
-      L: 50,
-      C: 100,
-      D: 500,
-      M: 1000,
-    };
-    let total = 0;
-    let prevValue = 0;
-    for (let i = roman.length - 1; i >= 0; i--) {
-      const currentValue = romanMap[roman[i]];
-      if (!currentValue) return NaN;
-      if (currentValue < prevValue) {
-        total -= currentValue;
-      } else {
-        total += currentValue;
-      }
-      prevValue = currentValue;
-    }
-    return total;
-  };
-
-  const speak = async (text: string) => {
-    try {
-      let processedText = text
-        .replace(/\+/g, " tambah ")
-        .replace(/-/g, " kurang ")
-        .replace(/\*/g, " kali ")
-        .replace(/×/g, " kali ")
-        .replace(/\//g, " bagi ")
-        .replace(/÷/g, " bagi ")
-        .replace(/%/g, " persen ")
-        .replace(/=/g, " sama dengan ");
-      processedText = processedText.replace(
-        /Rp\.?\s?(\d[\d.,]*)/g,
-        (match, amount) => {
-          const cleanAmount = amount.replace(/[.,]/g, "");
-          const angkaKata = angkaTerbilang(parseInt(cleanAmount, 10));
-          return `rupiah ${angkaKata}`;
-        }
-      );
-      processedText = processedText.replace(/\b[MCDXLIV]+\b/gi, (match) => {
-        const decimal = romanToDecimal(match.toUpperCase());
-        if (isNaN(decimal)) return match;
-        const angkaKata = angkaTerbilang(decimal);
-        return angkaKata;
-      });
-      const formattedText = processedText.replace(/\d+/g, (match) => {
-        const number = parseInt(match, 10);
-        const angkaKata = angkaTerbilang(number);
-        return angkaKata;
-      });
-      console.log("Formatted Text: ", formattedText);
-      const audioStream = await elevenlabs.generate({
-        voice: "Kira",
-        model_id: "eleven_turbo_v2_5",
-        text: formattedText,
-      });
-      const chunks: Uint8Array[] = [];
-      for await (const chunk of audioStream) {
-        chunks.push(chunk);
-      }
-      const audioData = new Blob(chunks, { type: "audio/mpeg" });
-      const audioUrl = URL.createObjectURL(audioData);
-      if (audioRef.current) {
-        audioRef.current.src = audioUrl;
-        audioRef.current.play();
-
-        audioRef.current.onended = () => {
-          URL.revokeObjectURL(audioUrl);
-        };
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const askToYuccAI = async (question: string) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_PYTHON_API_URL}/query`,
-        { query_text: question }
-      );
-      console.log("YuccAI Response:", response.data);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      return "Failed to get Answer from YuccAI.";
-    }
-  };
-
-  const onRecommendationClick = async (question: string) => {
-    if (question) {
-      if (isValidQuestion(question)) {
-        setIsDisabled(true);
-        speakRandomThinkingMessage();
-        try {
-          const yuccAIResponse = await askToYuccAI(question);
-          await speak(yuccAIResponse.response);
-          await showPopUpResponse(
-            yuccAIResponse.response,
-            yuccAIResponse.source
-          );
-        } catch (error) {
-          console.error(error);
-          await speak("Terjadi kesalahan. Silakan coba lagi.");
-        } finally {
-          setIsDisabled(false);
-        }
-      } else {
-        await speak("Maaf, saya tidak mengerti. Silakan coba lagi.");
-      }
-    }
-  };
-
-  const addNewInformation = async (
-    question: string,
-    answer: string,
-    answerSource: string
-  ) => {
-    try {
-      const result = await axios.post(
-        `${import.meta.env.VITE_GOLANG_API_URL}/api/add_information`,
-        {
-          question: question,
-          answer: answer,
-          answersource: answerSource,
-        }
-      );
-      console.log("History Added: ", result);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const showPopUpResponse = async (
-    yuccAIResponse: string,
-    yuccAISource: string
-  ) => {
-    try {
-      const result = await Swal.fire({
-        title: "",
-        html: `
-              <div style="text-align: center;" id="swal-text-container">
-                  <!-- TextGenerateEffect -->
-              </div>
-            `,
-        confirmButtonText: "Selesai",
-        showCancelButton: true,
-        cancelButtonText: "Berhenti",
-        customClass: {
-          popup: "swal-modal",
-          confirmButton: "swal-confirm-button swal-wide-button",
-          cancelButton: "swal-cancel-button swal-wide-button",
-          actions: "swal-two-buttons",
-        },
-        buttonsStyling: false,
-        position: "bottom",
-        showClass: {
-          popup: `
-                animate__animated
-                animate__fadeInUp
-                animate__faster
-              `,
-        },
-        hideClass: {
-          popup: `
-                animate__animated
-                animate__fadeOutDown
-                animate__faster
-              `,
-        },
-        willOpen: () => {
-          createRoot(document.getElementById("swal-text-container")!).render(
-            <TextGenerateEffect
-              className="font-semibold italic text-base sm:text-lg text-gray-900"
-              words={yuccAIResponse}
-            />
-          );
-        },
-      });
-      if (result.isDismissed) {
-        if (audioRef.current) {
-          audioRef.current.pause();
-          audioRef.current.currentTime = 0;
-        }
-      } else {
-        if (audioRef.current) {
-          audioRef.current.pause();
-          audioRef.current.currentTime = 0;
-        }
-        await addNewInformation(question, yuccAIResponse, yuccAISource);
-      }
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const showLiveSubtitlePopup = async (subtitleText: string) => {
@@ -548,110 +146,36 @@ export const Home: React.FC<HomeProps> = ({
     }
   };
 
-  const greeting = async () => {
-    const text =
-      "Jalan jalan ke luar kota. Jangan lupa membawa jamu. Perkenalkan namaku Yucca. Siap menjadi asistenmu!";
-
-    try {
-      const audioStream = await elevenlabs.generate({
-        voice: "Kira",
-        model_id: "eleven_turbo_v2_5",
-        text: text,
-      });
-      const chunks: Uint8Array[] = [];
-      for await (const chunk of audioStream) {
-        chunks.push(chunk);
-      }
-      const audioData = new Blob(chunks, { type: "audio/mpeg" });
-      const audioUrl = URL.createObjectURL(audioData);
-      if (audioRef.current) {
-        audioRef.current.src = audioUrl;
-        audioRef.current.playbackRate = 0.9;
-        audioRef.current.play();
-
-        audioRef.current.onended = () => {
-          URL.revokeObjectURL(audioUrl);
-        };
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const waiting = async () => {};
-
-  const handleChatMessage = (question: string, subtitleText: string) => {
-    // HAPUS INI NANTI LOUIS
-    // sayUniqueFact();
-
-    // YANG DBAWAH INI JGN
-    setIsChatOpen(true);
-    openChat(question, subtitleText);
-  };
-
   const openChat = async (question: string, subtitleText: string) => {
     try {
-      // const modifiedSubtitleText = subtitleText
-      //   .replace(/(^|\n)- (.*)/gm, "$1<strong>$2</strong>") // Ganti "-" menjadi bullet point dan semibold
-      //   .replace(
-      //     /(https?:\/\/[^\s]+)/gm,
-      //     '<img src="$1" style="max-width: 100%; height: auto; margin-top: 1rem;">'
-      //   );
       const modifiedSubtitleText = subtitleText
-        .replace(/(^|\n)- (.*)/gm, "$1<strong>$2</strong>") // Ganti "-" menjadi bullet point dan semibold
+        // .replace(/(^|\n)- (.*)/gm, "$1<strong>$2</strong>") // Ganti "-" menjadi bullet point dan semibold
+        .replace(/(^|\n)- (.*)/gm, "$1$2")
         .replace(
           /(https?:\/\/[^\s]+)/gm,
           '<img src="$1" style="width: 100%; height: auto; margin-top: 1rem;">'
         );
 
-      const result = await Swal.fire({
-        title: "",
-        html: `
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
-          <div style="text-align: center; font-weight: bold; font-size: 1.2rem;">
-            ${question}
-          </div>
-          <div style="text-align: left; font-weight: normal; font-size: 1rem; color: #333; white-space: pre-line;"
-            class="animate__animated animate__fadeIn" id="swal-live-subtitle-container">
-            ${modifiedSubtitleText}
-          </div>
-        </div>
-        `,
-        showCancelButton: false,
-        showConfirmButton: true,
-        confirmButtonText: "Tutup",
-        customClass: {
-          popup: "swal-modal",
-          confirmButton: "swal-confirm-button swal-wide-button",
-          cancelButton: "swal-cancel-button swal-wide-button",
-          actions: "swal-two-buttons",
-        },
-        buttonsStyling: false,
-        position: "bottom",
-        showClass: {
-          popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `,
-        },
-        hideClass: {
-          popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `,
-        },
-      });
-      if (result.isConfirmed) {
-        // await clickAction();
-      }
+      await getResponse(question, modifiedSubtitleText);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const closeChat = () => {};
+  const switchAnimation = (animation: string) => {
+    setAnimation(animation);
+  };
+
+  const greeting = async () => {
+    const text =
+      "Jalan jalan ke luar kota. Jangan lupa membawa jamu. Perkenalkan namaku Yucca. Siap menjadi asistenmu!";
+
+    try {
+      await speak(text, audioRef);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     if (!statusModal) {
@@ -663,6 +187,54 @@ export const Home: React.FC<HomeProps> = ({
   useEffect(() => {
     setAnimation("findAnswerVideo");
   }, []);
+
+  const handleAskByVoice = async () => {
+    setShowChat(false);
+    await processQuestion(
+      question,
+      setIsDisabled,
+      setQuestion,
+      audioRef,
+      searchingAnswerAudio,
+      failedToFindAnswerAudio,
+      successfullyFindAnswerAudio,
+      setAnswer,
+      fetchRecommendation
+    );
+    setShowChat(true);
+  };
+
+  const handleRecommendationClick = async (question: string) => {
+    setShowChat(false);
+    await onRecommendationClick(
+      question,
+      setIsDisabled,
+      setQuestion,
+      audioRef,
+      searchingAnswerAudio,
+      failedToFindAnswerAudio,
+      successfullyFindAnswerAudio,
+      setAnswer,
+      fetchRecommendation
+    );
+    setShowChat(true);
+  };
+
+  const handleAskByText = async (question: string) => {
+    setShowChat(false);
+    await askByText(
+      question,
+      setIsDisabled,
+      setQuestion,
+      audioRef,
+      searchingAnswerAudio,
+      failedToFindAnswerAudio,
+      successfullyFindAnswerAudio,
+      setAnswer,
+      fetchRecommendation
+    );
+    setShowChat(true);
+  };
 
   return (
     <>
@@ -680,21 +252,22 @@ export const Home: React.FC<HomeProps> = ({
           isDisabled={isDisabled}
           micOnClick={micOnClick}
         />
-        <TextSection askByText={askByText} isDisabled={isDisabled} />
+        <TextSection askByText={handleAskByText} isDisabled={isDisabled} />
         <RecommendationSection
           loading={loading}
           isDisabled={isDisabled}
           recommendation={recommendation}
-          onRecommendationClick={onRecommendationClick}
+          onRecommendationClick={handleRecommendationClick}
         />
         {showChat && (
           <div className="fixed bottom-1 right-1">
             <button
               onClick={() =>
-                handleChatMessage(
-                  "Apa saja makanan yang ada di sekitar Universitas Ciputra Surabaya?",
-                  `Tentu, berikut adalah fakultas yang ada di UC:\n\n1. School of Business Management\nhttps://imgs.search.brave.com/ZW16koXAvfxrot-NprvOxwBmgDH36uakg8JFpZ-y1e8/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kaWVu/Zy5ibG9iLmNvcmUu/d2luZG93cy5uZXQv/d2VibWFzdGVyLzIw/MjEvMDYvTG9nby1V/Qy1BcHBsZS1BY2Fk/ZW15LVVDLmpwZw\n2. School of Creative Industry\nhttps://iili.io/2rLrNRa.jpg\n3. School of Tourism\n4. School of Information Technology\n5. School of Medicine\n6. School of Dental Medicine\n7. School of Psychology\n8. School of Communication and Media Business  `
-                )
+                // openChat(
+                //   "Apa saja makanan yang ada di sekitar Universitas Ciputra Surabaya?",
+                //   `Tentu, berikut adalah fakultas yang ada di UC:\n\n1. School of Business Management\nhttps://imgs.search.brave.com/ZW16koXAvfxrot-NprvOxwBmgDH36uakg8JFpZ-y1e8/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9kaWVu/Zy5ibG9iLmNvcmUu/d2luZG93cy5uZXQv/d2VibWFzdGVyLzIw/MjEvMDYvTG9nby1V/Qy1BcHBsZS1BY2Fk/ZW15LVVDLmpwZw\n2. School of Creative Industry\nhttps://iili.io/2rLrNRa.jpg\n3. School of Tourism\n4. School of Information Technology\n5. School of Medicine\n6. School of Dental Medicine\n7. School of Psychology\n8. School of Communication and Media Business  `
+                // )
+                openChat(question, answer)
               }
               className={`rounded-full bg-cream cursor-pointer shadow-lg animate-bounce`}
             >

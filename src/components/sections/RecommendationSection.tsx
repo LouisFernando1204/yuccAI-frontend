@@ -21,6 +21,8 @@ export const RecommendationSection: React.FC<RecommendationSectionProps> = ({
   const capitalizeFirstLetter = (text: string): string =>
     text.charAt(0).toUpperCase() + text.slice(1);
 
+  console.log(isDisabled)
+
   return (
     <div className="flex justify-start items-start w-full px-3">
       <div
@@ -114,7 +116,7 @@ export const RecommendationSection: React.FC<RecommendationSectionProps> = ({
                     </svg>{" "}
                   </div>
                   <div className="basis-7/10">
-                    <h1 className="text-[10px] md:text-[14px] font-normal">
+                    <h1 className="text-[10px] md:text-[14px] text-start font-normal">
                       {capitalizeFirstLetter(item.question)}?
                     </h1>
                   </div>

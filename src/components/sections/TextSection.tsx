@@ -19,7 +19,7 @@ export const TextSection: React.FC<TextSectionProps> = ({
           onChange={(e) => setQuestion(e.target.value)}
           type="text"
           placeholder="Type your message..."
-          className="outline-none text-darkOrange rounded-full items-center flex pl-2 text-xs bg-cream placeholder-darkOrange"
+          className="outline-none text-darkOrange rounded-full items-center flex px-4 text-xs md:text-lg bg-cream placeholder-darkOrange"
         />
       </div>
       <div className="mr-2 shadow-md flex items-center justify-center rounded-full bg-lightOrange">
@@ -28,7 +28,12 @@ export const TextSection: React.FC<TextSectionProps> = ({
           viewBox="0 0 24 24"
           className="size-6 md:size-20 p-1 text-darkOrange"
           fill="currentColor"
-          onClick={() => !isDisabled && askByText(question)}
+          onClick={() => {
+            if (!isDisabled) {
+              askByText(question)
+            }
+            setQuestion("")
+          }}
         >
           <path
             fillRule="evenodd"
