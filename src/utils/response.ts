@@ -1,19 +1,19 @@
 import { speak } from "./helper";
 
-export const goodAnswerResponse = async (
+export const answerResponse = async (
   text: string,
   audio: HTMLAudioElement,
   audioRef: React.MutableRefObject<HTMLAudioElement | null>
 ) => {
-  audio.play();
-  await speak(text, audioRef);
-};
 
-export const badAnswerResponse = async (
-  text: string,
-  audio: HTMLAudioElement,
-  audioRef: React.MutableRefObject<HTMLAudioElement | null>
-) => {
+  audio.loop = true;
   audio.play();
-  await speak(text, audioRef);
+
+  setTimeout(() => {
+    audio.pause();
+    audio.currentTime = 0; 
+  }, 4000);
+
+  speak(text, audioRef);
+
 };

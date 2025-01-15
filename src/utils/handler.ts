@@ -1,6 +1,6 @@
 import { addNewInformation, askToYuccAI } from "../server/information";
 import { isValidQuestion, speakRandomThinkingMessage } from "./helper";
-import { badAnswerResponse, goodAnswerResponse } from "./response";
+import { answerResponse } from "./response";
 
 export const askByText = async (
   question: string,
@@ -79,12 +79,12 @@ export const processQuestion = async (
           searchingAnswerAudio.currentTime = 0;
 
           yuccAIResponse.response.toLowerCase().includes("maaf")
-            ? badAnswerResponse(
+            ? answerResponse(
                 yuccAIResponse.response,
                 failedToFindAnswerAudio,
                 audioRef
               )
-            : goodAnswerResponse(
+            : answerResponse(
                 yuccAIResponse.response,
                 successfullyFindAnswerAudio,
                 audioRef
@@ -105,7 +105,7 @@ export const processQuestion = async (
         searchingAnswerAudio.pause();
         searchingAnswerAudio.currentTime = 0;
         console.error(error);
-        await badAnswerResponse(
+        await answerResponse(
           "Terjadi kesalahan. Silakan coba lagi.",
           failedToFindAnswerAudio,
           audioRef
@@ -116,7 +116,7 @@ export const processQuestion = async (
         setQuestion(question);
       }
     } else {
-      await badAnswerResponse(
+      await answerResponse(
         "Maaf, saya tidak mengerti. Silakan coba lagi.",
         failedToFindAnswerAudio,
         audioRef
