@@ -241,11 +241,6 @@ export const Home: React.FC<HomeProps> = ({
 
   return (
     <>
-      {/* <img
-        src="https://drive.google.com/thumbnail?id=1NbzMEhEQOVM2K370_-SmYHFOBpJRu2sk&sz=1000.jpg"
-        alt="asdasd"
-      /> */}
-
       <div className="flex flex-col items-center mt-10 space-y-6">
         <div className="flex justify-center w-1/5 m-0">
           <YuccaModel animation={animation} />
@@ -265,9 +260,7 @@ export const Home: React.FC<HomeProps> = ({
         {showChat && (
           <div className="fixed bottom-1 right-1">
             <button
-              onClick={() =>
-                openChat(question, answer)
-              }
+              onClick={() => openChat(question, answer)}
               className={`rounded-full bg-cream cursor-pointer shadow-lg animate-bounce`}
             >
               <svg

@@ -1,14 +1,10 @@
 import React from "react";
 
 interface NavbarProps {
-  navigateToHistory: () => void;
-  navigateToHome: () => void;
   isNavigateToHistory?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
-  navigateToHistory,
-  navigateToHome,
   isNavigateToHistory,
 }) => {
   return (
@@ -20,8 +16,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div>
           <h1
             className="text-center font-dynaPuff cursor-pointer text-6xl font-bold md:text-4xl text-lightOrange"
-          >
-            YUCCA{" "}
+          > {isNavigateToHistory ? 'HISTORY' : 'YUCCA'}
           </h1>
         </div>
       </div>
