@@ -19,7 +19,8 @@ Welcome to **YuccAI**, the ultimate voice assistant website designed exclusively
 ## ⚙️ Tech Stack Behind YuccAI  
 - 🌐 **Frontend**: ReactTS (Typescript) 
 - 🔧 **Backend**: Golang Fiber REST API Integration (for managing conversation data storage)  
-- 🧠 **AI Models**: OpenAI Model (Text Embedding Ada 002 and GPT 3.5 Turbo) integrated via Python FastAPI  
+- 🧠 **AI Models**: OpenAI Model (Text Embedding Ada 002 and GPT 3.5 Turbo) integrated via Python FastAPI
+- 📒 **Vector Database**: Pinecone
 - 🎨 **3D Model**: Blender for Yucca’s interactive design, integrated with ReactTS
 
 ## 🚀 YuccAI Insights  
