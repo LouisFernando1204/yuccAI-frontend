@@ -28,10 +28,10 @@ Welcome to **YuccAI**, the ultimate voice assistant website designed exclusively
 
 ## 🌟 Take a Peek at YuccAI in Action! 📸  
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-    <img src="https://drive.google.com/uc?id=12PIBpZ-mB-zWGOZvUavCURuL6_U_4kcV" alt="Screenshot 1" style="width: 70%;"/>
-    <img src="https://drive.google.com/uc?id=1P4FvCOfB9bjqEjJOwfL0z4TAT8hmQKWI" alt="Screenshot 2" style="width: 70%;"/>
-    <img src="https://drive.google.com/uc?id=1QKdbP1s8kRa_mCSo8q7jJv9SjMeF-e8Z" alt="Screenshot 3" style="width: 70%;"/>
-    <img src="https://drive.google.com/uc?id=1xDZoLUkGbwmxtp2qk257dQYICaeW2tTb" alt="Screenshot 4" style="width: 70%;"/>
+    <img src="https://drive.google.com/uc?id=1dwm-r1UQFPpiY8IYFAuhxELBOqIzbnHa" alt="Screenshot 1" style="width: 30%;"/>
+    <img src="https://drive.google.com/uc?id=1e0qBOyyBDzGFxjpjKraZyVFfhRWHop9M" alt="Screenshot 2" style="width: 30%;"/>
+    <img src="https://drive.google.com/uc?id=1dxLxYAno-qHcuC0VW2NZqxhjAQX3FEao" alt="Screenshot 3" style="width: 30%;"/>
+    <img src="https://drive.google.com/uc?id=1e-jadH30QGHm8qMCSiq3Br1Y9varQgMr" alt="Screenshot 4" style="width: 30%;"/>
 </div>
 
 ## 🤝 Contributors  
