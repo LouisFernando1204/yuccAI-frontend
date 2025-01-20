@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { LoadingScreen } from "../components/ui/loading-screen";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { QuestionAnswer } from "../utils/objectInterface";
@@ -57,7 +55,7 @@ export const History: React.FC<HistoryProps> = ({
                 >
                   <button
                     onClick={() => handleToggle(index)}
-                    className={`flex flex-row justify-between w-full text-sm text-left py-4 px-6 hover:bg-primary/20
+                    className={`flex flex-row justify-between w-full text-sm md:text-lg text-left py-4 px-6 hover:bg-primary/20
                      transition-colors font-bold focus:outline-none text-dark`}
                   >
                     {capitalizeFirstLetter(item.question)}?{" "}
@@ -73,7 +71,7 @@ export const History: React.FC<HistoryProps> = ({
                   </button>
                   {openIndex === allInformation.length - 1 - index && (
                     <div
-                      className={`px-6 py-4 bg-light/10 border-t text-sm border-darkOrange font-normal text-darkOrange hover:bg-primary/20`}
+                      className={`px-6 py-4 bg-light/10 border-t text-sm md:text-md border-darkOrange font-normal text-darkOrange hover:bg-primary/20`}
                     >
                       <p>{capitalizeFirstLetter(item.answer)}</p>
                     </div>

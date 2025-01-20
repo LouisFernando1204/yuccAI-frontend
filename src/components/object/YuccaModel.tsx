@@ -135,6 +135,7 @@ const YuccaModel: React.FC<YuccaModelProps> = ({ animation }) => {
       <div className="w-screen h-auto">
         <video
           ref={videoRef}
+          // src='https://gateway.pinata.cloud/ipfs/bafybeifljatihjpigj2sgucfmkxzuxkosymy4ozl5jk7j6m5rpzbhjalne'
           src={yucca}
           autoPlay
           loop

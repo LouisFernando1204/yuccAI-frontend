@@ -186,7 +186,7 @@ export const Home: React.FC<HomeProps> = ({
   useEffect(() => {
     if (!statusModal) {
       setAnimation("introVideo");
-      greeting();
+      // greeting();
     } else {
       setAnimation("idleVideo");
     }

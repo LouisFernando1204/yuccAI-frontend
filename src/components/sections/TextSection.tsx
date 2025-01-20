@@ -26,7 +26,7 @@ export const TextSection: React.FC<TextSectionProps> = ({
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          className="size-6 md:size-20 p-1 text-darkOrange"
+          className="size-6 md:size-12 p-1 text-darkOrange"
           fill="currentColor"
           onClick={() => {
             if (!isDisabled) {
