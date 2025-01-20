@@ -114,13 +114,6 @@ const YuccaModel: React.FC<YuccaModelProps> = ({ animation }) => {
           video.currentTime = badAnswerPlayback.start;
           video.play();
           console.log("b");
-          // } else if (
-          //   animationObject == "speakVideo" &&
-          //   video.currentTime >= speakPlayback.end
-          // ) {
-          //   video.currentTime = speakPlayback.start + 1;
-          //   video.play();
-          //   console.log("s");
         } else if (
           animationObject == "tickledVideo" &&
           video.currentTime >= tickledPlayback.end
@@ -182,7 +175,6 @@ const YuccaModel: React.FC<YuccaModelProps> = ({ animation }) => {
       <div className="w-screen h-auto">
         <video
           ref={videoRef}
-          // src='https://gateway.pinata.cloud/ipfs/bafybeifljatihjpigj2sgucfmkxzuxkosymy4ozl5jk7j6m5rpzbhjalne'
           src={yucca}
           autoPlay
           loop
