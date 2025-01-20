@@ -45,7 +45,7 @@ export const Home: React.FC<HomeProps> = ({
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const [animation, setAnimation] = useState<string>("goodAnswerVideo");
+  const [animation, setAnimation] = useState<string>("idleVideo");
 
   const clickAction = async () => {
     setMicOnClick(!micOnClick);
@@ -186,7 +186,7 @@ export const Home: React.FC<HomeProps> = ({
   useEffect(() => {
     if (!statusModal) {
       setAnimation("introVideo");
-      // greeting();
+      greeting();
     } else {
       setAnimation("idleVideo");
     }

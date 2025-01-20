@@ -182,7 +182,8 @@ export const speakWithoutChanger = async (
 export const speakWithChanger = async (
   text: string,
   audioRef: React.MutableRefObject<HTMLAudioElement | null>,
-  setAnimation: React.Dispatch<React.SetStateAction<string>>
+  setAnimation: React.Dispatch<React.SetStateAction<string>>,
+  status: string
 ) => {
   try {
     let processedText = text
@@ -266,9 +267,22 @@ export const speakWithChanger = async (
     }
     const audioData = new Blob(chunks, { type: "audio/mpeg" });
     const audioUrl = URL.createObjectURL(audioData);
+
     if (audioRef.current) {
+      // setAnimation("speakVideo")
       audioRef.current.src = audioUrl;
-      audioRef.current.play();
+      if (status == "good") {
+        setAnimation("goodAnswerVideo");
+        setTimeout(() => {
+          audioRef.current!.play();
+        }, 6000);
+      }
+      else {
+        setAnimation("badAnswerVideo");
+        setTimeout(() => {
+          audioRef.current!.play();
+        }, 1000);
+      }
 
       audioRef.current.onended = () => {
         URL.revokeObjectURL(audioUrl);
@@ -280,64 +294,3 @@ export const speakWithChanger = async (
     console.log(error);
   }
 };
-
-// const speak = async (text: string) => {
-//   try {
-//     let processedText = text.replace(/\b[MCDXLIV]+\b/gi, (match) => {
-//       const romanRegex = /^(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))$/i;
-//       if (!romanRegex.test(match)) return match;
-//       const decimal = romanToDecimal(match.toUpperCase());
-//       if (isNaN(decimal)) return match;
-//       const angkaKata = angkaTerbilang(decimal);
-//       if (decimal === 501 && match.toLowerCase() === "di") return match;
-//       return angkaKata;
-//     });
-
-//     processedText = processedText.replace(/Rp\.?\s?(\d[\d.,]*)/g, (match, amount) => {
-//       const cleanAmount = amount.replace(/[.,]/g, "");
-//       const angkaKata = angkaTerbilang(parseInt(cleanAmount, 10));
-//       return `${angkaKata} rupiah`;
-//     });
-
-//     processedText = processedText.replace(/\b\d+\b/g, (match) => {
-//       const number = parseInt(match, 10);
-//       const angkaKata = angkaTerbilang(number);
-//       return angkaKata;
-//     });
-
-//     console.log("Processed Text: ", processedText);
-
-//     if (!processedText) {
-//       console.log("Processed text is empty, skipping Eleven Labs generation.");
-//       return;
-//     }
-
-//     const audioStream = await elevenlabs.generate({
-//       voice: "Fabi",
-//       model_id: "eleven_multilingual_v2",
-//       text: processedText,
-//       voice_settings: {
-//         stability: 0.5,
-//         similarity_boost: 0.75,
-//         style: 0.5,
-//         use_speaker_boost: true,
-//       },
-//     });
-
-//     const chunks: Uint8Array[] = [];
-//     for await (const chunk of audioStream) {
-//       chunks.push(chunk);
-//     }
-//     const audioData = new Blob(chunks, { type: "audio/mpeg" });
-//     const audioUrl = URL.createObjectURL(audioData);
-//     if (audioRef.current) {
-//       audioRef.current.src = audioUrl;
-//       audioRef.current.play();
-//       audioRef.current.onended = () => {
-//         URL.revokeObjectURL(audioUrl);
-//       };
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };

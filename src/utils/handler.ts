@@ -73,34 +73,36 @@ export const processQuestion = async (
       await speakRandomThinkingMessage(audioRef);
       setAnimation("searchingAnswerVideo");
 
-      await new Promise((resolve) => setTimeout(resolve, 4000));
+      // await new Promise((resolve) => setTimeout(resolve, 4000));
 
-      searchingAnswerAudio.loop = true;
-      searchingAnswerAudio.play();
+      // searchingAnswerAudio.loop = true;
+      // searchingAnswerAudio.play();
 
       try {
         const yuccAIResponse = await askToYuccAI(question);
 
         if (yuccAIResponse) {
-          searchingAnswerAudio.pause();
-          searchingAnswerAudio.currentTime = 0;
+          // searchingAnswerAudio.pause();
+          // searchingAnswerAudio.currentTime = 0;
 
           if (yuccAIResponse.response.toLowerCase().includes("maaf")) {
-            setAnimation("badAnswerVideo");
+            // setAnimation("badAnswerVideo");
             await answerResponse(
               yuccAIResponse.response,
               failedToFindAnswerAudio,
               audioRef,
-              setAnimation
+              setAnimation,
+              "bad"
             );
           } else {
             console.log("masuk sini")
-            setAnimation("goodAnswerVideo");
+            // setAnimation("goodAnswerVideo");
             await answerResponse(
               yuccAIResponse.response,
               successfullyFindAnswerAudio,
               audioRef,
-              setAnimation
+              setAnimation,
+              "good"
             );
           }
 
@@ -116,15 +118,16 @@ export const processQuestion = async (
           }
         }
       } catch (error) {
-        searchingAnswerAudio.pause();
-        searchingAnswerAudio.currentTime = 0;
+        // searchingAnswerAudio.pause();
+        // searchingAnswerAudio.currentTime = 0;
         console.error(error);
         setAnimation("badAnswerVideo");
         await answerResponse(
           "Terjadi kesalahan. Silakan coba lagi.",
           failedToFindAnswerAudio,
           audioRef,
-          setAnimation
+          setAnimation,
+          "bad"
         );
         setAnswer("Terjadi kesalahan. Silakan coba lagi.");
       } finally {
@@ -138,7 +141,8 @@ export const processQuestion = async (
         "Maaf, saya tidak mengerti. Silakan coba lagi.",
         failedToFindAnswerAudio,
         audioRef, 
-        setAnimation
+        setAnimation,
+        "bad"
       );
       // new Promise((resolve) => setTimeout(resolve, 5000));
       // setAnimation("idleVideo")

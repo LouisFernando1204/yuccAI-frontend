@@ -5,16 +5,9 @@ export const answerResponse = async (
   audio: HTMLAudioElement,
   audioRef: React.MutableRefObject<HTMLAudioElement | null>,
   setAnimation: React.Dispatch<React.SetStateAction<string>>,
+  status: string
 ) => {
   await new Promise((resolve) => setTimeout(resolve, 1200));
 
-  audio.loop = true;
-  audio.play();
-
-  setTimeout(() => {
-    audio.pause();
-    audio.currentTime = 0;
-  }, 3000);
-
-  speakWithChanger(text, audioRef, setAnimation);
+  speakWithChanger(text, audioRef, setAnimation, status);
 };

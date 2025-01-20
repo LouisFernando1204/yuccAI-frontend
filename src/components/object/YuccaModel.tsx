@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import yucca from "../../assets/video/yucca.mp4";
 import laugh from "../../assets/sound/laugh.mp3";
+import successFindAnswer from "../../assets/sound/successFindAnswer.mp3";
+import failedToFindAnswer from "../../assets/sound/failedToFindAnswer.mp3";
+import searchingAnswer from "../../assets/sound/searchingAnswer.mp3";
 
 interface YuccaModelProps {
   animation: string;
@@ -11,6 +14,9 @@ const YuccaModel: React.FC<YuccaModelProps> = ({ animation }) => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const laughAudio = new Audio(laugh);
+  const successAudio = new Audio(successFindAnswer);
+  const failedAudio = new Audio(failedToFindAnswer);
+  const searchAudio = new Audio(searchingAnswer);
 
   const introPlayback = {
     start: 0,
@@ -36,14 +42,40 @@ const YuccaModel: React.FC<YuccaModelProps> = ({ animation }) => {
     start: 87,
     end: 90,
   };
+  let searchAudioTimeout: ReturnType<typeof setTimeout>;
 
   useEffect(() => {
     setAnimationObject(animation);
   }, [animation]);
 
   useEffect(() => {
+    if (
+      animationObject === "goodAnswerVideo" ||
+      animationObject === "badAnswerVideo"
+    ) {
+      clearTimeout(searchAudioTimeout);
+      searchAudio.pause();
+      searchAudio.currentTime = 0;
+    }
+
+    if (animationObject === "searchingAnswerVideo") {
+      searchAudioTimeout = setTimeout(() => {
+        searchAudio.loop = true;
+        searchAudio.play();
+      }, 4000);
+    }
+
+    return () => {
+      clearTimeout(searchAudioTimeout);
+      searchAudio.pause();
+      searchAudio.currentTime = 0;
+    };
+  }, [animationObject]);
+
+  useEffect(() => {
     const video = videoRef.current;
     if (video) {
+
       handleLoadedMetadata();
 
       const handleTimeUpdate = () => {
@@ -82,6 +114,13 @@ const YuccaModel: React.FC<YuccaModelProps> = ({ animation }) => {
           video.currentTime = badAnswerPlayback.start;
           video.play();
           console.log("b");
+          // } else if (
+          //   animationObject == "speakVideo" &&
+          //   video.currentTime >= speakPlayback.end
+          // ) {
+          //   video.currentTime = speakPlayback.start + 1;
+          //   video.play();
+          //   console.log("s");
         } else if (
           animationObject == "tickledVideo" &&
           video.currentTime >= tickledPlayback.end
@@ -106,10 +145,18 @@ const YuccaModel: React.FC<YuccaModelProps> = ({ animation }) => {
     if (video) {
       if (animationObject == "goodAnswerVideo") {
         video.currentTime = goodAnswerPlayback.start;
+        console.log("aa");
+        setTimeout(() => {
+          successAudio.play();
+        }, 500)
       } else if (animationObject == "searchingAnswerVideo") {
         video.currentTime = searchingAnswerPlayback.start;
       } else if (animationObject == "badAnswerVideo") {
         video.currentTime = badAnswerPlayback.start;
+        setTimeout(() => {
+          failedAudio.play();
+        }, 1000)
+        // bad answer play
       } else if (animationObject == "idleVideo") {
         video.currentTime = idlePlayback.start;
       } else if (animationObject == "introVideo") {
