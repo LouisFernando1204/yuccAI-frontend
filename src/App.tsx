@@ -42,7 +42,12 @@ function App() {
   const fetchRecommendation = async (answerSource: string) => {
     try {
       const result = await axios.get(
-        `${import.meta.env.VITE_GOLANG_API_URL}/api/get_all_information`
+        `${import.meta.env.VITE_GOLANG_API_URL}/api/get_all_information`,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        }
       );
       const filteredRecommendation = result.data.filter(
         (item: { answersource: string }) =>
@@ -70,11 +75,20 @@ function App() {
     }
   }, [recommendationLoading, showModal]);
 
+  // useEffect(() => {
+  //   if (showModal)
+  // }, [showModal])
+
   useEffect(() => {
     const fetchAllInformation = async () => {
       try {
         const result = await axios.get(
-          `${import.meta.env.VITE_GOLANG_API_URL}/api/get_all_information`
+          `${import.meta.env.VITE_GOLANG_API_URL}/api/get_all_information`,
+          {
+            headers: {
+              "ngrok-skip-browser-warning": "true",
+            },
+          }
         );
         if (result.data != null) {
           console.log("RESULT DATA: ", result.data);

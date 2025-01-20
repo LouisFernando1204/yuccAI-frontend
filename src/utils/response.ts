@@ -1,9 +1,10 @@
-import { speak } from "./helper";
+import { speakWithChanger } from "./helper";
 
 export const answerResponse = async (
   text: string,
   audio: HTMLAudioElement,
-  audioRef: React.MutableRefObject<HTMLAudioElement | null>
+  audioRef: React.MutableRefObject<HTMLAudioElement | null>,
+  setAnimation: React.Dispatch<React.SetStateAction<string>>,
 ) => {
   await new Promise((resolve) => setTimeout(resolve, 1200));
 
@@ -15,5 +16,5 @@ export const answerResponse = async (
     audio.currentTime = 0;
   }, 3000);
 
-  speak(text, audioRef);
+  speakWithChanger(text, audioRef, setAnimation);
 };

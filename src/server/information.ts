@@ -21,7 +21,7 @@ export const addNewInformation = async (
 ) => {
   try {
     const result = await axios.post(
-      `${import.meta.env.VITE_GOLANG_API_URL}/api/add_informatio`,
+      `${import.meta.env.VITE_GOLANG_API_URL}/api/add_information`,
       {
         question: question,
         answer: answer,

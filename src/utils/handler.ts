@@ -86,18 +86,21 @@ export const processQuestion = async (
           searchingAnswerAudio.currentTime = 0;
 
           if (yuccAIResponse.response.toLowerCase().includes("maaf")) {
-            setAnimation("goodAnswerVideo");
-            answerResponse(
+            setAnimation("badAnswerVideo");
+            await answerResponse(
               yuccAIResponse.response,
               failedToFindAnswerAudio,
-              audioRef
+              audioRef,
+              setAnimation
             );
           } else {
+            console.log("masuk sini")
             setAnimation("goodAnswerVideo");
-            answerResponse(
+            await answerResponse(
               yuccAIResponse.response,
               successfullyFindAnswerAudio,
-              audioRef
+              audioRef,
+              setAnimation
             );
           }
 
@@ -116,22 +119,29 @@ export const processQuestion = async (
         searchingAnswerAudio.pause();
         searchingAnswerAudio.currentTime = 0;
         console.error(error);
+        setAnimation("badAnswerVideo");
         await answerResponse(
           "Terjadi kesalahan. Silakan coba lagi.",
           failedToFindAnswerAudio,
-          audioRef
+          audioRef,
+          setAnimation
         );
         setAnswer("Terjadi kesalahan. Silakan coba lagi.");
       } finally {
         setIsDisabled(false);
         setQuestion(question);
+        // setAnimation("idleVideo");
       }
     } else {
+      setAnimation("badAnswerVideo");
       await answerResponse(
         "Maaf, saya tidak mengerti. Silakan coba lagi.",
         failedToFindAnswerAudio,
-        audioRef
+        audioRef, 
+        setAnimation
       );
+      // new Promise((resolve) => setTimeout(resolve, 5000));
+      // setAnimation("idleVideo")
     }
   }
 };

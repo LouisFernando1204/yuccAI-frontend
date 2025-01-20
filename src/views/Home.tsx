@@ -9,7 +9,7 @@ import { RecommendationSection } from "../components/sections/RecommendationSect
 import { QuestionAnswer } from "../utils/objectInterface";
 import YuccaModel from "../components/object/YuccaModel";
 import { TextSection } from "../components/sections/TextSection";
-import { speak } from "../utils/helper";
+import { speakWithoutChanger } from "../utils/helper";
 import { getResponse } from "../utils/popup";
 import {
   askByText,
@@ -37,7 +37,6 @@ export const Home: React.FC<HomeProps> = ({
   const [micOnClick, setMicOnClick] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [showChat, setShowChat] = useState<boolean>(false);
-  const [isWait, setIsWait] = useState<boolean>(false);
 
   const audio = new Audio(zapsplat_multimedia_button_click_bright_003_92100);
   const searchingAnswerAudio = new Audio(searchingAnswer);
@@ -119,7 +118,7 @@ export const Home: React.FC<HomeProps> = ({
           popup: "swal-modal",
           confirmButton: "swal-confirm-button swal-wide-button",
           cancelButton: "swal-cancel-button swal-wide-button",
-          actions: "swal-two-buttons",
+          actions: "swal-one-buttons",
         },
         buttonsStyling: false,
         position: "bottom",
@@ -148,13 +147,24 @@ export const Home: React.FC<HomeProps> = ({
 
   const openChat = async (question: string, subtitleText: string) => {
     try {
-      const modifiedSubtitleText = subtitleText
-        // .replace(/(^|\n)- (.*)/gm, "$1<strong>$2</strong>") // Ganti "-" menjadi bullet point dan semibold
+      const modifiedSubtitleText = subtitleText // .replace(/(^|\n)- (.*)/gm, "$1<strong>$2</strong>") // Ganti "-" menjadi bullet point dan semibold
         .replace(/(^|\n)- (.*)/gm, "$1$2")
         .replace(
-          /(https?:\/\/[^\s]+)/gm,
-          '<img src="$1" style="width: 100%; height: auto; margin-top: 1rem;">'
+          /(https:\/\/iili\.io[^\s]+)/gm,
+          '<a href="$1" target="_blank"><img src="$1" style="width: 100%; height: auto; margin-top: 1rem;"></a>'
+        )
+        .replace(
+          /(https:\/\/www\.google\.com\/maps[^\s]+)/gm,
+          '<iframe src="$1" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>'
+        )
+        .replace(
+          /(https:\/\/api\.whatsapp\.com[^\s]+)/gm,
+          '<a href="$1" target="_blank" style="text-decoration: none;"><button style="padding: 10px 20px; background-color: #f8a557; margin-top: 1rem; color: white; border: none; border-radius: 5px; cursor: pointer;">Chat via WhatsApp</button></a>'
         );
+      // .replace(
+      //   /(https?:\/\/[^\s]+)/gm,
+      //   '<img src="$1" style="width: 100%; height: auto; margin-top: 1rem;">'
+      // );
 
       await getResponse(question, modifiedSubtitleText);
     } catch (error) {
@@ -162,16 +172,12 @@ export const Home: React.FC<HomeProps> = ({
     }
   };
 
-  const switchAnimation = (animation: string) => {
-    setAnimation(animation);
-  };
-
   const greeting = async () => {
     const text =
       "Jalan jalan ke luar kota. Jangan lupa membawa jamu. Perkenalkan namaku Yucca. Siap menjadi asistenmu!";
 
     try {
-      await speak(text, audioRef);
+      await speakWithoutChanger(text, audioRef);
     } catch (error) {
       console.log(error);
     }
@@ -179,14 +185,14 @@ export const Home: React.FC<HomeProps> = ({
 
   useEffect(() => {
     if (!statusModal) {
-      // setAnimation("../assets/video/findAnswerVideo.mp4")
-      // greeting();
+      setAnimation("introVideo");
+      greeting();
+    } else {
+      setAnimation("idleVideo");
     }
   }, [statusModal]);
 
-  useEffect(() => {
-    // setAnimation("findAnswerVideo");
-  }, [animation]);
+  useEffect(() => {}, [animation]);
 
   const handleAskByVoice = async () => {
     setShowChat(false);
@@ -257,6 +263,7 @@ export const Home: React.FC<HomeProps> = ({
           recommendation={recommendation}
           onRecommendationClick={handleRecommendationClick}
         />
+
         {showChat && (
           <div className="fixed bottom-1 right-1">
             <button

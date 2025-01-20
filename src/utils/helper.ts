@@ -91,54 +91,73 @@ export const speakRandomThinkingMessage = async (
   audioRef: React.MutableRefObject<HTMLAudioElement | null>
 ) => {
   const messages = [
-    "Tunggu ya, YuccAI lagi mikir keras buat kasih jawaban yang pas buat kamu.",
-    "Sabar sebentar, YuccAI lagi nyari solusi terbaik nih!",
-    "Sebentar ya, YuccAI lagi sibuk nyusun jawaban kece buat kamu.",
-    "Mohon tunggu sebentar, YuccAI lagi ngecek info yang paling cocok buat kamu.",
-    "Tenang aja, YuccAI lagi brainstorming biar jawabannya keren dan pas.",
+    "Tunggu ya, Yucca lagi mikir keras buat kasih jawaban yang pas buat kamu.",
+    "Sabar sebentar, Yucca lagi nyari solusi terbaik nih!",
+    "Sebentar ya, Yucca lagi sibuk nyusun jawaban kece buat kamu.",
+    "Mohon tunggu sebentar, Yucca lagi ngecek info yang paling cocok buat kamu.",
+    "Tenang aja, Yucca lagi brainstorming biar jawabannya keren dan pas.",
   ];
   const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-  await speak(randomMessage, audioRef);
+  await speakWithoutChanger(randomMessage, audioRef);
 };
 
-export const speak = async (
+export const speakWithoutChanger = async (
   text: string,
   audioRef: React.MutableRefObject<HTMLAudioElement | null>
 ) => {
   try {
     let processedText = text
-      .replace(/\+/g, " tambah ")
-      .replace(/-/g, " kurang ")
-      .replace(/\*/g, " kali ")
-      .replace(/×/g, " kali ")
-      .replace(/\//g, " bagi ")
-      .replace(/÷/g, " bagi ")
-      .replace(/%/g, " persen ")
-      .replace(/=/g, " sama dengan ");
+      .replace(/\bhttps:\/\/\S+\b/g, "")
+      .replace(/\blink\b/g, "");
+
+    processedText = text.replace(/\b[MCDXLIV]+\b/gi, (match) => {
+      const romanRegex =
+        /^(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))$/i;
+      if (!romanRegex.test(match)) return match;
+      const decimal = romanToDecimal(match.toUpperCase());
+      if (isNaN(decimal)) return match;
+      const angkaKata = angkaTerbilang(decimal);
+      if (decimal === 501 && match.toLowerCase() === "di") return match;
+      return angkaKata;
+    });
+
     processedText = processedText.replace(
       /Rp\.?\s?(\d[\d.,]*)/g,
       (match, amount) => {
         const cleanAmount = amount.replace(/[.,]/g, "");
         const angkaKata = angkaTerbilang(parseInt(cleanAmount, 10));
-        return `rupiah ${angkaKata}`;
+        return `${angkaKata} rupiah`;
       }
     );
-    processedText = processedText.replace(/\b[MCDXLIV]+\b/gi, (match) => {
-      const decimal = romanToDecimal(match.toUpperCase());
-      if (isNaN(decimal)) return match;
-      const angkaKata = angkaTerbilang(decimal);
-      return angkaKata;
-    });
-    const formattedText = processedText.replace(/\d+/g, (match) => {
+
+    processedText = processedText.replace(/\b\d+\b/g, (match) => {
       const number = parseInt(match, 10);
       const angkaKata = angkaTerbilang(number);
       return angkaKata;
     });
-    console.log("Formatted Text: ", formattedText);
+
+    console.log("Processed Text: ", processedText);
+
+    if (!processedText) {
+      console.log("Processed text is empty, skipping Eleven Labs generation.");
+      return;
+    }
+    console.log("Formatted Text: ", processedText);
+    // const audioStream = await elevenlabs.generate({
+    //   voice: "Kira",
+    //   model_id: "eleven_turbo_v2_5",
+    //   text: processedText,
+    // });
     const audioStream = await elevenlabs.generate({
-      voice: "Kira",
-      model_id: "eleven_turbo_v2_5",
-      text: formattedText,
+      voice: "Yucca - Professional",
+      model_id: "eleven_multilingual_v2",
+      text: processedText,
+      voice_settings: {
+        stability: 0.5,
+        similarity_boost: 0.75,
+        style: 0.5,
+        use_speaker_boost: true,
+      },
     });
     const chunks: Uint8Array[] = [];
     for await (const chunk of audioStream) {
@@ -152,9 +171,173 @@ export const speak = async (
 
       audioRef.current.onended = () => {
         URL.revokeObjectURL(audioUrl);
+        //
       };
     }
   } catch (error) {
     console.log(error);
   }
 };
+
+export const speakWithChanger = async (
+  text: string,
+  audioRef: React.MutableRefObject<HTMLAudioElement | null>,
+  setAnimation: React.Dispatch<React.SetStateAction<string>>
+) => {
+  try {
+    let processedText = text
+      .replace(/\bhttps:\/\/\S+\b/g, "") // Menghapus URL yang dimulai dengan https://
+      .replace(/\[.*?\]\(\S+\)/g, "") // Menghapus format markdown [Link Text](URL)
+      .replace(/\blink\b/g, "") // Menghapus kata 'link' jika ada
+      .replace(/Link/g, "") // Mengganti kalimat dengan yang diinginkan
+      .replace(/Link Foto:/g, "") // Mengganti kalimat dengan yang diinginkan
+      .replace(/Link Foto Fasilitas: Gambar tidak tersedia/g, "") // Mengganti kalimat dengan yang diinginkan
+      .replace(/Link Foto: Tidak tersedia dalam konteks yang diberikan/g, "") // Mengganti kalimat dengan yang diinginkan
+      .replace(/Tidak ada foto yang tersedia/g, "")
+      .replace(/Link Peta GMaps:/g, "")
+      .replace(/\(/g, "") // Menghapus karakter (
+      .replace(/\)/g, "") // Menghapus karakter )      .replace(/Gambar tidak tersedia/g, "")
+      .replace(/Tidak tersedia dalam konteks yang diberikan/g, "")
+      .replace(/Link Nomor Telepon Whatsapp WA:/g, "");
+
+    if (processedText) {
+      processedText = processedText.replace(/\b[MCDXLIV]+\b/gi, (match) => {
+        const romanRegex =
+          /^(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))$/i;
+
+        if (!romanRegex.test(match)) return match;
+
+        const decimal = romanToDecimal(match.toUpperCase());
+
+        if (decimal < 1 || decimal > 20 || isNaN(decimal)) return match;
+
+        const angkaKata = angkaTerbilang(decimal);
+
+        if (decimal === 501 && match.toLowerCase() === "di") return match;
+
+        return angkaKata;
+      });
+      console.log("del1", processedText);
+
+      processedText = processedText.replace(
+        /Rp\.?\s?(\d[\d.,]*)/g,
+        (match, amount) => {
+          const cleanAmount = amount.replace(/[.,]/g, "");
+          const angkaKata = angkaTerbilang(parseInt(cleanAmount, 10));
+          return `${angkaKata} rupiah`;
+        }
+      );
+      console.log("del2", processedText);
+
+      processedText = processedText.replace(/\b\d+\b/g, (match) => {
+        const number = parseInt(match, 10);
+        const angkaKata = angkaTerbilang(number);
+        return angkaKata;
+      });
+      console.log("del3", processedText);
+
+      console.log("Processed Text: ", processedText);
+    }
+
+    if (!processedText) {
+      console.log("Processed text is empty, skipping Eleven Labs generation.");
+      return;
+    }
+    console.log("Formatted Text: ", processedText);
+    // const audioStream = await elevenlabs.generate({
+    //   voice: "Kira",
+    //   model_id: "eleven_turbo_v2_5",
+    //   text: processedText,
+    // });
+    const audioStream = await elevenlabs.generate({
+      voice: "Yucca - Professional",
+      model_id: "eleven_multilingual_v2",
+      text: processedText,
+      voice_settings: {
+        stability: 0.5,
+        similarity_boost: 0.75,
+        style: 0.5,
+        use_speaker_boost: true,
+      },
+    });
+    const chunks: Uint8Array[] = [];
+    for await (const chunk of audioStream) {
+      chunks.push(chunk);
+    }
+    const audioData = new Blob(chunks, { type: "audio/mpeg" });
+    const audioUrl = URL.createObjectURL(audioData);
+    if (audioRef.current) {
+      audioRef.current.src = audioUrl;
+      audioRef.current.play();
+
+      audioRef.current.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        //
+        setAnimation("idleVideo");
+      };
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// const speak = async (text: string) => {
+//   try {
+//     let processedText = text.replace(/\b[MCDXLIV]+\b/gi, (match) => {
+//       const romanRegex = /^(M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))$/i;
+//       if (!romanRegex.test(match)) return match;
+//       const decimal = romanToDecimal(match.toUpperCase());
+//       if (isNaN(decimal)) return match;
+//       const angkaKata = angkaTerbilang(decimal);
+//       if (decimal === 501 && match.toLowerCase() === "di") return match;
+//       return angkaKata;
+//     });
+
+//     processedText = processedText.replace(/Rp\.?\s?(\d[\d.,]*)/g, (match, amount) => {
+//       const cleanAmount = amount.replace(/[.,]/g, "");
+//       const angkaKata = angkaTerbilang(parseInt(cleanAmount, 10));
+//       return `${angkaKata} rupiah`;
+//     });
+
+//     processedText = processedText.replace(/\b\d+\b/g, (match) => {
+//       const number = parseInt(match, 10);
+//       const angkaKata = angkaTerbilang(number);
+//       return angkaKata;
+//     });
+
+//     console.log("Processed Text: ", processedText);
+
+//     if (!processedText) {
+//       console.log("Processed text is empty, skipping Eleven Labs generation.");
+//       return;
+//     }
+
+//     const audioStream = await elevenlabs.generate({
+//       voice: "Fabi",
+//       model_id: "eleven_multilingual_v2",
+//       text: processedText,
+//       voice_settings: {
+//         stability: 0.5,
+//         similarity_boost: 0.75,
+//         style: 0.5,
+//         use_speaker_boost: true,
+//       },
+//     });
+
+//     const chunks: Uint8Array[] = [];
+//     for await (const chunk of audioStream) {
+//       chunks.push(chunk);
+//     }
+//     const audioData = new Blob(chunks, { type: "audio/mpeg" });
+//     const audioUrl = URL.createObjectURL(audioData);
+//     if (audioRef.current) {
+//       audioRef.current.src = audioUrl;
+//       audioRef.current.play();
+//       audioRef.current.onended = () => {
+//         URL.revokeObjectURL(audioUrl);
+//       };
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
