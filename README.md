@@ -24,7 +24,9 @@ Welcome to **YuccAI**, the ultimate voice assistant website designed exclusively
 - 🎨 **3D Model**: Blender for Yucca’s interactive design, integrated with ReactTS
 
 ## 🚀 YuccAI Insights  
-- 💻 **Source Code**: [View Code](https://github.com/LouisFernando1204/yuccAI-frontend)  
+- 🌐 Frontend : [View Code](https://github.com/LouisFernando1204/yuccAI-frontend)
+- 🔧 Backend : [View Code](https://github.com/LouisFernando1204/yuccAI-backend)
+- 🧠 AI Models : [View Code](https://github.com/LouisFernando1204/yuccAI-model)
 
 ## 🌟 Take a Peek at YuccAI in Action! 📸  
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
